@@ -1,11 +1,119 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>My Awesome Website</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Homework Repository</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f2f5fa;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    header {
+      background: #1a73e8;
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    main {
+      max-width: 800px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      margin: 0;
+      font-size: 2em;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f9fafc;
+      margin-bottom: 10px;
+      padding: 12px 20px;
+      border-radius: 6px;
+      transition: background 0.2s;
+    }
+    li:hover {
+      background: #eef3fc;
+    }
+    a.download-btn {
+      background: #1a73e8;
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      transition: background 0.2s;
+    }
+    a.download-btn:hover {
+      background: #0f5ad3;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+      font-size: 0.9em;
+    }
+  </style>
 </head>
 <body>
-  <h1>Welcome to My Website!</h1>
-  <p>This is my new GitHub Pages site.</p>
+  <header>
+    <h1>📚 University Homework</h1>
+    <p>Qui puoi trovare e scaricare tutti i compiti settimanali</p>
+  </header>
+  <main>
+    <h2>Lista Homework</h2>
+    <ul id="file-list">
+      <li>Caricamento in corso...</li>
+    </ul>
+  </main>
+  <footer>
+    <p>© 2025 - Francesco Sarno</p>
+  </footer>
+
+  <script>
+    // === CONFIGURA IL TUO GITHUB USERNAME E REPO QUI ===
+    const username = "tuo_username";
+    const repo = "nome_del_tuo_repo";
+    const folderPath = "homework"; // cartella dove metti i file
+
+    async function loadFiles() {
+      const apiUrl = `https://api.github.com/repos/${username}/${repo}/contents/${folderPath}`;
+      const response = await fetch(apiUrl);
+      const data = await response.json();
+
+      const list = document.getElementById("file-list");
+      list.innerHTML = "";
+
+      if (!Array.isArray(data)) {
+        list.innerHTML = "<li>Nessun file trovato.</li>";
+        return;
+      }
+
+      data.forEach(file => {
+        if (file.type === "file") {
+          const li = document.createElement("li");
+          li.innerHTML = `
+            <span>${file.name}</span>
+            <a class="download-btn" href="${file.download_url}" target="_blank">Download</a>
+          `;
+          list.appendChild(li);
+        }
+      });
+    }
+
+    loadFiles();
+  </script>
 </body>
 </html>
