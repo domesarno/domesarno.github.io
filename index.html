@@ -102,10 +102,16 @@
 
       data.forEach(file => {
         if (file.type === "file") {
+          // Usa il link "raw" per scaricare direttamente
+          const rawUrl = file.download_url.replace(
+            "https://raw.githubusercontent.com",
+            "https://raw.githubusercontent.com"
+          );
+
           const li = document.createElement("li");
           li.innerHTML = `
             <span>${file.name}</span>
-            <a class="download-btn" href="${file.download_url}" target="_blank">Download</a>
+            <a class="download-btn" href="${rawUrl}" download="${file.name}">Download</a>
           `;
           list.appendChild(li);
         }
