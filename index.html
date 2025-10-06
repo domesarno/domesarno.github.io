@@ -82,10 +82,9 @@
   </footer>
 
   <script>
-    // === CONFIGURA IL TUO GITHUB USERNAME E REPO QUI ===
     const username = "domesarno";
     const repo = "domesarno.github.io";
-    const folderPath = "statistics"; // cartella dove metti i file
+    const folderPath = "statistics";
 
     async function loadFiles() {
       const apiUrl = `https://api.github.com/repos/${username}/${repo}/contents/${folderPath}`;
@@ -102,16 +101,11 @@
 
       data.forEach(file => {
         if (file.type === "file") {
-          // Usa il link "raw" per scaricare direttamente
-          const rawUrl = file.download_url.replace(
-            "https://raw.githubusercontent.com",
-            "https://raw.githubusercontent.com"
-          );
-
+          const rawUrl = file.html_url + "?raw=true"; // forzato per download
           const li = document.createElement("li");
           li.innerHTML = `
             <span>${file.name}</span>
-            <a class="download-btn" href="${rawUrl}" download="${file.name}">Download</a>
+            <a class="download-btn" href="${rawUrl}" target="_blank">Download</a>
           `;
           list.appendChild(li);
         }
