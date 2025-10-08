@@ -1,20 +1,20 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Homework 1 - Descriptive Statistics</title>
+  <title>Homework 1 - Statistics and Cybersecurity</title>
   <style>
-    /* ---------- RESET & BASE ---------- */
+    /* ---------- BASE STYLE ---------- */
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, #e9efff, #f9fbff);
-      color: #f2f5fa;
+      color: #000; /* testo principale nero */
     }
 
     h1, h2, h3 {
-      color: #1a237e;
+      color: #1a237e; /* mantiene i titoli blu */
     }
 
     a {
@@ -50,16 +50,16 @@
 
     /* ---------- MAIN CONTENT ---------- */
     main {
-      max-width: 900px;
+      max-width: 1100px; /* aumentata larghezza del rettangolo bianco */
       margin: 40px auto;
       background: white;
       border-radius: 12px;
-      padding: 40px;
+      padding: 50px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
 
     section {
-      margin-bottom: 40px;
+      margin-bottom: 50px;
     }
 
     section h2 {
@@ -68,48 +68,6 @@
       font-size: 1.4em;
     }
 
-    ul {
-      list-style: none;
-      padding-left: 0;
-    }
-
-    ul li {
-      background: #f4f6fb;
-      padding: 12px 16px;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      transition: 0.2s;
-    }
-
-    ul li:hover {
-      background: #e1e9ff;
-    }
-
-    .download-btn {
-      display: inline-block;
-      background: #1a73e8;
-      color: white;
-      padding: 10px 18px;
-      border-radius: 6px;
-      font-weight: 500;
-      transition: 0.2s;
-    }
-
-    .download-btn:hover {
-      background: #0f5ad3;
-    }
-
-    /* ---------- INFO BOX ---------- */
-    .info-box {
-      background: #e3f2fd;
-      border-left: 5px solid #1a73e8;
-      padding: 15px 20px;
-      border-radius: 8px;
-      margin-top: 20px;
-      font-size: 0.95em;
-    }
-
-    /* ---------- FOOTER ---------- */
     footer {
       text-align: center;
       padding: 30px;
@@ -122,10 +80,11 @@
     .back {
       display: inline-block;
       margin-top: 20px;
+      color: #333;
     }
-
   </style>
 </head>
+
 <body>
 
   <header>
@@ -134,12 +93,73 @@
   </header>
 
   <main>
-    <section>
-      <h2>📘 Descrizione</h2>
-      <p>Analisi descrittiva dei dati: media, mediana, moda, varianza e deviazione standard su un dataset fornito.</p>
+
+    <!-- ======================
+         INTRODUCTION SECTION
+         ====================== -->
+    <section id="introduction">
+      <!-- NOTE: In this section you will introduce the topic -->
+      <h2>Introduction</h2>
+      <p>
+        Statistics is a branch of mathematics that focuses on collecting, analyzing, and interpreting data. 
+        It plays a crucial role in cybersecurity, helping experts make data-driven decisions, detect anomalies, 
+        and assess potential risks.
+      </p>
+    </section>
+
+    <!-- ======================
+         SECTION 1 - What is Statistics
+         ====================== -->
+    <section id="what-is-statistics">
+      <!-- NOTE: Here explain the basic concepts of statistics -->
+      <h2>What is Statistics?</h2>
+      <p>
+        Statistics deals with methods for summarizing data (descriptive statistics) and making inferences or predictions 
+        about a population based on sample data (inferential statistics). It allows cybersecurity professionals 
+        to understand and quantify complex systems by using data as evidence.
+      </p>
+    </section>
+
+    <!-- ======================
+         SECTION 2 - Use in Cybersecurity
+         ====================== -->
+    <section id="use-in-cybersecurity">
+      <!-- NOTE: Here explain why and how statistics is useful in cybersecurity -->
+      <h2>Why Statistics is Useful in Cybersecurity</h2>
+      <p>
+        Statistical analysis helps detect abnormal network behavior, estimate the probability of cyber threats, 
+        and evaluate the effectiveness of defense mechanisms. Through probabilistic models and risk analysis, 
+        it supports better decision-making and resource allocation in security operations.
+      </p>
+    </section>
+
+    <!-- ======================
+         SECTION 3 - Conclusion
+         ====================== -->
+    <section id="conclusion">
+      <!-- NOTE: Conclude with the importance of using statistics in data-driven cybersecurity -->
+      <h2>Conclusion</h2>
+      <p>
+        In cybersecurity, where threats are unpredictable and data is abundant, statistics provides the tools to transform 
+        raw information into actionable insights. It enables experts to detect, prevent, and respond to attacks more effectively.
+      </p>
+    </section>
+
+    <!-- ======================
+         SECTION 4 - Sources
+         ====================== -->
+    <section id="sources">
+      <!-- NOTE: Add your references here -->
+      <h2>Sources</h2>
+      <ul>
+        <li><a href="https://www.statology.org/7-statistical-methods-evaluating-cybersecurity-risks/" target="_blank">Statology — 7 Statistical Methods for Evaluating Cybersecurity Risks</a></li>
+        <li><a href="https://www.zengrc.com/blog/the-statistical-analysis-of-measuring-cybersecurity-risk/" target="_blank">ZenGRC — Statistical Analysis of Measuring Cybersecurity Risk</a></li>
+        <li><a href="https://en.wikipedia.org/wiki/Cyber_risk_quantification" target="_blank">Wikipedia — Cyber Risk Quantification</a></li>
+      </ul>
     </section>
 
     <!--
+    
     <section>
       <h2>📂 File disponibili</h2>
       <ul>
@@ -159,7 +179,7 @@
     
     -->
 
-    <a href="../../index.html" class="back">← Torna alla Home</a>
+    <a href="../../index.html" class="back">← Back to Home</a>
   </main>
 
   <footer>
