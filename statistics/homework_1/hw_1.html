@@ -95,66 +95,86 @@
   <main>
 
     <!-- ======================
-         INTRODUCTION SECTION
-         ====================== -->
-    <section id="introduction">
-      <!-- NOTE: In this section you will introduce the topic -->
-      <h2>Introduction</h2>
-      <p>
-        Statistics is a branch of mathematics that focuses on collecting, analyzing, and interpreting data. 
-        It plays a crucial role in cybersecurity, helping experts make data-driven decisions, detect anomalies, 
-        and assess potential risks.
-      </p>
-    </section>
-
-    <!-- ======================
          SECTION 1 - What is Statistics
          ====================== -->
-    <section id="what-is-statistics">
-      <!-- NOTE: Here explain the basic concepts of statistics -->
-      <h2>What is Statistics?</h2>
+    <section>
+      <h2>What is statistics?</h2>
       <p>
-        Statistics deals with methods for summarizing data (descriptive statistics) and making inferences or predictions 
-        about a population based on sample data (inferential statistics). It allows cybersecurity professionals 
-        to understand and quantify complex systems by using data as evidence.
+        Statistics is the scientific discipline that deals with the collection, organization, analysis, interpretation, and presentation of data.
+        In practice, statisticians first define a population (the complete group of interest) and often analyze a sample (a representative part) of it when it is not possible or practical to collect data from all subjects.
+      </p>
+      
+      <p>
+        Statistics is divided into two main branches:
+        <br><strong>Descriptive statistics</strong>: summarizes and describes the main characteristics of a data set (e.g., mean, median, variance, standard deviation).
+        <br><strong>Inferential statistics</strong>: allows conclusions or predictions to be made about an entire population based on a sample, by estimating parameters or testing hypotheses.
+      </p>
+      
+      <p>
+        A statistical data (or statistic, in the singular) is a number calculated from sample data, used to estimate the parameters of a population.
+        Statistics is often defined as the “science of uncertainty,” as it provides tools for drawing conclusions even in the presence of incomplete or noisy data.
+        (<a href="https://en.wikipedia.org/wiki/Statistics">Wikipedia</a>, <a href="https://www.britannica.com/science/statistics">Britannica</a>)
       </p>
     </section>
 
     <!-- ======================
          SECTION 2 - Use in Cybersecurity
          ====================== -->
-    <section id="use-in-cybersecurity">
-      <!-- NOTE: Here explain why and how statistics is useful in cybersecurity -->
-      <h2>Why Statistics is Useful in Cybersecurity</h2>
+    <section id="what-is-statistics">
+      <h2>Why statistics is useful in Cybersecurity</h2>
       <p>
-        Statistical analysis helps detect abnormal network behavior, estimate the probability of cyber threats, 
-        and evaluate the effectiveness of defense mechanisms. Through probabilistic models and risk analysis, 
-        it supports better decision-making and resource allocation in security operations.
+        Statistics play a fundamental role in the field of cybersecurity. Here are some examples of how they are applied:
+      </p>
+      
+      <p><strong>1. Detection of anomalies and intrusions</strong><br>
+        In computer networks, log collection, and data traffic, most activities are “normal.” However, an attack often manifests itself as an anomaly, i.e., behavior that deviates from expected values (e.g., an abnormal number of requests or failed logins).
+        The use of statistical measures such as mean, standard deviation, or z-score allows these suspicious events to be identified.
+      <em>(Personal note: these methods are not foolproof—they can generate false positives or negatives—but they are essential tools for filtering and reporting potential attacks.)</em>
+      </p>
+
+
+      <p><strong>2. Probabilistic modeling and risk assessment</strong><br>
+        Statistics allow us to quantify the probability of an attack occurring and to estimate future scenarios.
+        For example, we can model the probability that a vulnerability will be exploited within a certain period, or calculate the expected average damage.
+        These estimates help us decide how much to invest in security measures relative to the potential economic risk.
+      </p>
+  
+      <p><strong>3. Evaluation of the effectiveness of defenses</strong><br>
+        When implementing a security measure (firewall, patch, policy), statistical methods allow us to verify whether the reduction in incidents is actually significant compared to the past, and not the result of chance.
+      </p>
+  
+      <p><strong>4. Trend analysis and forecasting</strong><br>
+        Using historical data on attacks and vulnerabilities, statistical models (such as regression or time series) can be applied to predict future trends and prepare for new threats.
+      </p>
+  
+      <p><strong>5. Decision support and resource allocation</strong><br>
+        Since resources and time are limited, statistics can be used to determine which areas pose the greatest risk, allowing efforts to be focused where they are most needed.
+        In this way, cybersecurity decisions become more rational and based on concrete data.
       </p>
     </section>
 
     <!-- ======================
          SECTION 3 - Conclusion
          ====================== -->
-    <section id="conclusion">
-      <!-- NOTE: Conclude with the importance of using statistics in data-driven cybersecurity -->
-      <h2>Conclusion</h2>
+    <section>
       <p>
-        In cybersecurity, where threats are unpredictable and data is abundant, statistics provides the tools to transform 
-        raw information into actionable insights. It enables experts to detect, prevent, and respond to attacks more effectively.
+        In a world where data is ubiquitous and cyber threats are constantly evolving, statistics provide the tools to transform raw information into useful knowledge.
+        It allows you to detect anomalies, estimate probabilities, evaluate the effectiveness of defenses, and plan more efficient protection strategies.
+        A small personal contribution: statistics are all the more powerful when integrated with domain knowledge—in this case, with an understanding of systems and networks—because only then is it possible to truly distinguish between noise and signal.
       </p>
     </section>
 
     <!-- ======================
          SECTION 4 - Sources
          ====================== -->
-    <section id="sources">
+    <section>
       <!-- NOTE: Add your references here -->
       <h2>Sources</h2>
       <ul>
-        <li><a href="https://www.statology.org/7-statistical-methods-evaluating-cybersecurity-risks/" target="_blank">Statology — 7 Statistical Methods for Evaluating Cybersecurity Risks</a></li>
-        <li><a href="https://www.zengrc.com/blog/the-statistical-analysis-of-measuring-cybersecurity-risk/" target="_blank">ZenGRC — Statistical Analysis of Measuring Cybersecurity Risk</a></li>
-        <li><a href="https://en.wikipedia.org/wiki/Cyber_risk_quantification" target="_blank">Wikipedia — Cyber Risk Quantification</a></li>
+        <li><a href="https://www.statology.org/7-statistical-methods-evaluating-cybersecurity-risks/">Statology – 7 Statistical Methods for Evaluating Cybersecurity Risks</a></li>
+        <li><a href="https://www.zengrc.com/blog/the-statistical-analysis-of-measuring-cybersecurity-risk/">ZenGRC – The Statistical Analysis of Measuring Cybersecurity Risk</a></li>
+        <li><a href="https://en.wikipedia.org/wiki/Cyber_risk_quantification">Wikipedia – Cyber Risk Quantification</a></li>
+        <li><a href="https://www.britannica.com/science/statistics">Encyclopaedia Britannica – Statistics</a></li>
       </ul>
     </section>
 
