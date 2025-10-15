@@ -93,7 +93,6 @@
       text-align: center;
     }
 
-    /* Wrapper centrato per grafico e tabella */
     #chartTableContainer {
       display: flex;
       flex-direction: column;
@@ -104,37 +103,41 @@
       margin: 0 auto;
     }
     
-    /* Tabella lettere perfettamente centrata sotto il grafico */
-    #countTable {
-      border-collapse: collapse;
-      width: 100%;
-      max-width: 600px;
-      margin: 25px 0 40px 0;
-      text-align: center;
-      font-size: 0.95em;
-      background: #ffffff;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    #tablesContainer {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+      margin: 20px auto;
+      max-width: 900px;
     }
     
-    #countTable th {
+    .letterTable {
+      border-collapse: collapse;
+      width: 340px;
+      font-size: 0.9em;
+      text-align: center;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #ccc;
+    }
+    
+    .letterTable th {
       background-color: #e3f2fd;
       color: #1a237e;
       font-weight: bold;
-      padding: 10px;
-      border: 1px solid #ccc;
-    }
-    
-    #countTable td {
-      border: 1px solid #ccc;
       padding: 8px;
     }
     
-    #countTable tr:nth-child(even) {
+    .letterTable td {
+      border: 1px solid #ccc;
+      padding: 6px;
+    }
+    
+    .letterTable tr:nth-child(even) {
       background-color: #f9fbff;
     }
-
 
     #freqChart {
       width: 95% !important;
@@ -367,12 +370,33 @@
       <canvas id="freqChart"></canvas>
 
       <h4 style="margin-top:30px; text-align:center;">Letter Counts</h4>
-      <table id="countTable">
-        <thead>
-          <tr><th>Letter</th><th>Before</th><th>After</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+      <div id="tablesContainer">
+        <table class="letterTable" id="countTableLeft">
+          <thead>
+            <tr>
+              <th>Letter</th>
+              <th>Orig. Count</th>
+              <th>Orig. %</th>
+              <th>Cipher Count</th>
+              <th>Cipher %</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      
+        <table class="letterTable" id="countTableRight">
+          <thead>
+            <tr>
+              <th>Letter</th>
+              <th>Orig. Count</th>
+              <th>Orig. %</th>
+              <th>Cipher Count</th>
+              <th>Cipher %</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </section>
 
     <section id="decrypt" style="margin-top:60px;">
@@ -438,6 +462,18 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function() {
+      // --- Default text and auto encryption on load ---
+      const defaultText = "HELLO THIS IS AN EXAMPLE TEXT TO ENCRYPT WITH A CAESAR CIPHER.";
+      const defaultShift = 3;
+      document.getElementById('userText').value = defaultText;
+      document.getElementById('shiftValue').value = defaultShift;
+      
+      const defaultEncrypted = caesarShift(defaultText, defaultShift, false);
+      document.getElementById('encryptedOutput').innerText = defaultEncrypted;
+      updateChartAndTable(defaultText, defaultEncrypted, 'both');
+      
+      // --- Default for decrypt section ---
+      document.getElementById('cipherText').value = defaultEncrypted;
       function caesarShift(text, shift, decrypt=false) {
         const lower = 'abcdefghijklmnopqrstuvwxyz';
         const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -493,19 +529,32 @@
         const freqAfter = letterFrequencyPercent(afterText);
         const countBefore = letterFrequencyCount(beforeText);
         const countAfter = letterFrequencyCount(afterText);
+      
         const beforePerc = letters.map(l => freqBefore[l]);
         const afterPerc = letters.map(l => freqAfter[l]);
-
+      
         freqChart.data.datasets[0].data = (viewMode === 'after') ? [] : beforePerc;
         freqChart.data.datasets[1].data = (viewMode === 'before') ? [] : afterPerc;
         freqChart.update();
-
-        const tbody = document.querySelector("#countTable tbody");
-        tbody.innerHTML = "";
-        letters.forEach(l => {
-          tbody.insertAdjacentHTML('beforeend', `<tr><td>${l}</td><td>${countBefore[l]}</td><td>${countAfter[l]}</td></tr>`);
+      
+        const tbodyLeft = document.querySelector("#countTableLeft tbody");
+        const tbodyRight = document.querySelector("#countTableRight tbody");
+        tbodyLeft.innerHTML = "";
+        tbodyRight.innerHTML = "";
+      
+        letters.forEach((l, idx) => {
+          const row = `<tr>
+            <td>${l}</td>
+            <td>${countBefore[l]}</td>
+            <td>${freqBefore[l]}%</td>
+            <td>${countAfter[l]}</td>
+            <td>${freqAfter[l]}%</td>
+          </tr>`;
+          if (idx < 13) tbodyLeft.insertAdjacentHTML('beforeend', row);
+          else tbodyRight.insertAdjacentHTML('beforeend', row);
         });
       }
+
 
       const textInput = document.getElementById('userText');
       const shiftInput = document.getElementById('shiftValue');
