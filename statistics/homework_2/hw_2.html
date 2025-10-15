@@ -102,15 +102,23 @@
     }
 
     #cipher, #decrypt {
-      text-align: center;
+      text-align: left;
+    }
+    
+    #cipher textarea,
+    #decrypt textarea,
+    #cipher .output-box,
+    #decrypt .output-box,
+    #countTable,
+    #freqChart {
+      display: block;
+      margin: 15px auto;
     }
     
     #cipher textarea,
     #decrypt textarea,
     #cipher .output-box,
     #decrypt .output-box {
-      display: block;
-      margin: 15px auto;
       width: 90%;
       max-width: 700px;
       border: 1px solid #ccc;
@@ -123,8 +131,8 @@
       line-height: 1.5;
       text-align: left;
       resize: vertical;
-      white-space: pre-wrap;   /* testo va a capo automaticamente */
-      word-wrap: break-word;   /* evita overflow orizzontale */
+      white-space: pre-wrap;
+      word-wrap: break-word;
     }
 
     #cipher h3, #decrypt h3 {
