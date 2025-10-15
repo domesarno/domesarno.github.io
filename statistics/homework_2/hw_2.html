@@ -127,6 +127,57 @@
     #freqTableContainer tbody tr:nth-child(even) {
       background-color: #f9f9f9;
     }
+
+    #cipher textarea,
+    #decrypt textarea {
+      width: 90%;
+      max-width: 700px;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 1em;
+      font-family: 'Open Sans', sans-serif;
+      resize: vertical;
+      background: #f0f4ff;
+    }
+    
+    .output-box {
+      width: 90%;
+      max-width: 700px;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 1em;
+      font-family: 'Open Sans', sans-serif;
+      min-height: 100px;
+      background: #f0f4ff;
+      color: #000;
+      overflow-y: auto;
+      word-wrap: break-word;
+      text-align: left;
+    }
+    
+    #countTable {
+      border-collapse: collapse;
+      width: 80%;
+      margin: 20px auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    #countTable th {
+      background-color: #e3f2fd;
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+    #countTable td {
+      border: 1px solid #ccc;
+      padding: 8px;
+    }
+    #countTable tr:nth-child(even) {
+      background-color: #f9fbff;
+    }
+
   </style>
 </head>
 
@@ -346,11 +397,9 @@
         </button>
       </div>
     
-      <div style="display:flex; justify-content:space-around; flex-wrap:wrap; gap:20px; text-align:center;">
-        <div style="flex:1; min-width:400px;">
-          <h3>Encrypted / Decrypted Text</h3>
-          <div id="encryptedOutput" style="background:#f0f4ff; padding:15px; border-radius:8px; min-height:120px; max-height:200px; overflow-y:auto; word-wrap:break-word; font-weight:bold; font-size:1.05em;"></div>
-        </div>
+      <div style="text-align:center;">
+        <h3>Encrypted / Decrypted Text</h3>
+        <div id="encryptedOutput" class="output-box"></div>
       </div>
     
       <h3 style="margin-top:40px;">Letter Frequency Distribution</h3>
@@ -367,13 +416,45 @@
       <canvas id="freqChart" width="600" height="300" style="margin:auto; display:block;"></canvas>
     
       <h4 style="margin-top:30px;">Letter Counts</h4>
-      <table id="countTable" style="margin:auto; border-collapse:collapse; text-align:center;">
-        <thead style="background:#e3f2fd;">
+      <table id="countTable">
+        <thead>
           <tr><th>Letter</th><th>Before</th><th>After</th></tr>
         </thead>
         <tbody></tbody>
       </table>
+    
+      <!-- Decryption Section (separate) -->
+      <section id="decrypt" style="margin-top:60px;">
+        <h2>Caesar Cipher Decryption</h2>
+    
+        <p>
+          In this section, you can decrypt an encrypted message using a manual or automatic approach.  
+          Choose a shift value or let the system detect it automatically through <em>English letter frequency analysis</em>.
+        </p>
+    
+        <div style="text-align:center; margin:30px 0;">
+          <label for="cipherText"><strong>Enter encrypted text:</strong></label><br>
+          <textarea id="cipherText" rows="5" placeholder="Paste or type the encrypted message here..."></textarea><br><br>
+    
+          <label for="decryptShift"><strong>Shift (1–25):</strong></label>
+          <input type="number" id="decryptShift" min="1" max="25" value="3" style="width:60px; text-align:center;">
+    
+          <button id="manualDecryptBtn" style="padding:6px 12px; background:#f57c00; color:white; border:none; border-radius:6px; cursor:pointer;">
+            Manual Decrypt
+          </button>
+    
+          <button id="autoDecryptBtn" style="padding:6px 12px; background:#43a047; color:white; border:none; border-radius:6px; cursor:pointer; margin-left:8px;">
+            Auto Detect
+          </button>
+        </div>
+    
+        <div style="text-align:center;">
+          <h3>Decrypted Message</h3>
+          <div id="decryptOutput" class="output-box"></div>
+        </div>
+      </section>
     </section>
+
     
     <!-- ================================
          SCRIPT - Caesar Cipher + Chart
@@ -514,7 +595,9 @@
       document.getElementById('encryptBtn').addEventListener('click', () => processCipher(false, false));
       document.getElementById('decryptBtn').addEventListener('click', () => processCipher(true, false));
       document.getElementById('autoBtn').addEventListener('click', () => processCipher(true, true));
-    
+      document.getElementById('manualDecryptBtn').addEventListener('click', () => processCipher(true, false));
+      document.getElementById('autoDecryptBtn').addEventListener('click', () => processCipher(true, true));
+
       viewSelect.addEventListener('change', () => {
         updateChartAndTable(textInput.value, outputDiv.innerText, viewSelect.value);
       });
