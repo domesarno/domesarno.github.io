@@ -95,10 +95,13 @@
 
     #countTable {
       border-collapse: collapse;
-      width: 70%;
-      margin: 15px auto;
+      width: 60%;
+      margin: 20px auto;
       font-size: 0.95em;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      border-radius: 10px;
+      background: white;
+      text-align: center;
     }
 
     #countTable th {
@@ -112,10 +115,17 @@
     #countTable td {
       border: 1px solid #ccc;
       padding: 8px;
+      text-align: center;
     }
 
     #countTable tr:nth-child(even) {
       background-color: #f9fbff;
+    }
+    
+    /* Optional subtle hover effect for clarity */
+    #countTable tr:hover {
+      background-color: #eef5ff;
+      transition: 0.2s;
     }
 
     #freqChart {
@@ -386,6 +396,18 @@
       </div>
     </section>
 
+    <section id="conclusions" style="margin-top:60px;">
+      <h2>Conclusions</h2>
+      <p>
+        Through this assignment, we explored the concept of datasets and univariate distributions, 
+        understanding how data can be organized and analyzed using both SQL and visualization techniques.  
+        The practical implementation with the Caesar cipher provided a hands-on example of how statistical 
+        tools, such as frequency distributions, can be applied to cryptographic analysis.
+      </p>
+    </section>
+
+
+    
     <section>
       <h2>Sources</h2>
       <p style="font-size: 0.9em; color: #666;">
