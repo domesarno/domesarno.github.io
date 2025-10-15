@@ -101,16 +101,44 @@
       color: #333;
     }
 
-    #cipher textarea, #decrypt textarea {
+    #cipher, #decrypt {
+      text-align: center;
+    }
+    
+    #cipher textarea,
+    #decrypt textarea,
+    #cipher .output-box,
+    #decrypt .output-box {
+      display: block;
+      margin: 15px auto;
       width: 90%;
-      max-width: 700px; /*limite max*/
-      margin-top: 10px;
+      max-width: 700px;
       border: 1px solid #ccc;
       border-radius: 8px;
-      padding: 10px;
-      font-size: 1em;
+      background: #f0f4ff;
+      color: #000;
       font-family: 'Open Sans', sans-serif;
-      resize: vertical; /*espansione solo verticale*/
+      font-size: 1em;
+      padding: 12px;
+      line-height: 1.5;
+      text-align: left;
+      resize: vertical;
+      white-space: pre-wrap;   /* testo va a capo automaticamente */
+      word-wrap: break-word;   /* evita overflow orizzontale */
+    }
+
+    #cipher h3, #decrypt h3 {
+      color: #1a237e;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    #cipher button, #decrypt button {
+      margin-top: 10px;
+    }
+    
+    #cipher .output-box, #decrypt .output-box {
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     }
 
     #freqTableContainer table {
@@ -126,20 +154,6 @@
     
     #freqTableContainer tbody tr:nth-child(even) {
       background-color: #f9f9f9;
-    }
-
-    #cipher textarea,
-    #decrypt textarea {
-      width: 90%;
-      max-width: 700px;
-      margin-top: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      padding: 10px;
-      font-size: 1em;
-      font-family: 'Open Sans', sans-serif;
-      resize: vertical;
-      background: #f0f4ff;
     }
     
     .output-box {
@@ -161,8 +175,8 @@
     
     #countTable {
       border-collapse: collapse;
-      width: 50%; /* ridotta */
-      margin: 10px auto;
+      width: 40%; /* ridotta */
+      margin: 15px auto;
       font-size: 0.9em; /* testo più compatto */
       box-shadow: 0 1px 4px rgba(0,0,0,0.1);
     }
@@ -184,6 +198,14 @@
     }
     #countTable tr:nth-child(even) {
       background-color: #f9fbff;
+    }
+    
+    #freqChart {
+      width: 95% !important;
+      max-width: 900px;
+      height: 420px !important;
+      margin: 25px auto;
+      display: block;
     }
 
   </style>
