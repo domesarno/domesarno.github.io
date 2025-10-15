@@ -288,6 +288,116 @@
       </script>
     </section>
 
+    <!-- ======================
+         SECTION 4
+         ====================== -->
+    <section id="cipher">
+      <h2>Interactive Caesar Cipher Encryption</h2>
+    
+      <p>
+        In this section, you can enter your own text and encrypt it using a Caesar Cipher.  
+        You can choose a shift value (1–25), and the tool will show the encrypted text and the frequency distribution of letters.
+      </p>
+    
+      <div style="text-align:center; margin:30px 0;">
+        <label for="userText"><strong>Enter your text:</strong></label><br>
+        <textarea id="userText" rows="5" cols="60" placeholder="Type your text here..."></textarea><br><br>
+    
+        <label for="shiftValue"><strong>Choose shift (1–25):</strong></label>
+        <input type="number" id="shiftValue" min="1" max="25" value="3" style="width:60px; text-align:center;">
+        <button id="encryptBtn" style="margin-left:10px; padding:6px 12px; background:#1a73e8; color:white; border:none; border-radius:6px; cursor:pointer;">
+          Encrypt
+        </button>
+      </div>
+    
+      <h3>Encrypted Text:</h3>
+      <div id="encryptedOutput" style="background:#f0f4ff; padding:15px; border-radius:8px; min-height:40px; text-align:center; font-weight:bold; font-size:1.1em;"></div>
+    
+      <h3 style="margin-top:40px;">Letter Frequency Chart</h3>
+      <canvas id="freqChart" width="600" height="300" style="margin:auto; display:block;"></canvas>
+    </section>
+    
+    <!-- ======================
+         SCRIPT - Caesar Cipher + Chart
+         ====================== -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      // Caesar cipher function
+      function caesarEncrypt(text, shift) {
+        const alphabetLower = 'abcdefghijklmnopqrstuvwxyz';
+        const alphabetUpper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        let result = '';
+    
+        for (let char of text) {
+          if (alphabetLower.includes(char)) {
+            let newIndex = (alphabetLower.indexOf(char) + shift) % 26;
+            result += alphabetLower[newIndex];
+          } else if (alphabetUpper.includes(char)) {
+            let newIndex = (alphabetUpper.indexOf(char) + shift) % 26;
+            result += alphabetUpper[newIndex];
+          } else {
+            result += char; // keep spaces and punctuation
+          }
+        }
+        return result;
+      }
+    
+      // Frequency counter
+      function letterFrequency(text) {
+        const freq = {};
+        for (let char of text.toUpperCase()) {
+          if (char >= 'A' && char <= 'Z') {
+            freq[char] = (freq[char] || 0) + 1;
+          }
+        }
+        return freq;
+      }
+    
+      // Initialize chart
+      const ctx = document.getElementById('freqChart').getContext('2d');
+      let freqChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Letter Frequency',
+            data: [],
+            backgroundColor: '#64b5f6',
+            borderColor: '#1a73e8',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            x: { title: { display: true, text: 'Letters' } },
+            y: { title: { display: true, text: 'Count' }, beginAtZero: true }
+          }
+        }
+      });
+    
+      // Main encryption + chart update
+      document.getElementById('encryptBtn').addEventListener('click', () => {
+        const text = document.getElementById('userText').value;
+        const shift = parseInt(document.getElementById('shiftValue').value);
+        if (!text.trim()) {
+          alert('Please enter some text!');
+          return;
+        }
+    
+        const encrypted = caesarEncrypt(text, shift);
+        document.getElementById('encryptedOutput').innerText = encrypted;
+    
+        const freq = letterFrequency(encrypted);
+        const letters = Object.keys(freq).sort();
+        const counts = letters.map(l => freq[l]);
+    
+        // Update chart
+        freqChart.data.labels = letters;
+        freqChart.data.datasets[0].data = counts;
+        freqChart.update();
+      });
+    </script>
+
     <section>
       <h2>Sources</h2>
       <p style="font-size: 0.9em; color: #666;">
@@ -297,154 +407,6 @@
         - <a href="https://www.statisticshowto.com/univariate-distribution/" target="_blank">StatisticsHowTo – Univariate Distribution</a>
       </p>
     </section>
-
-    <section id="text-distribution">
-      <h2>Text Analysis: Letter Distribution</h2>
-
-
-      <p>
-        The goal of this section is to compute the distribution of letters in a given text.
-        We ignore spaces, punctuation, and case sensitivity, counting only alphabetic characters.
-      </p>
-    
-      <pre><code class="language-python">
-        import string
-        from collections import Counter
-        
-        text = "Data science is fun and powerful!"
-        
-        # Convert to uppercase and remove non-letter characters
-        clean_text = ''.join(ch.upper() for ch in text if ch.isalpha())
-        
-        # Count occurrences of each letter
-        letter_counts = Counter(clean_text)
-        total_letters = sum(letter_counts.values())
-        
-        # Compute relative frequency
-        distribution = {letter: round((count / total_letters) * 100, 2)
-                        for letter, count in letter_counts.items()}
-        
-        print("Letter Distribution (%):")
-        for letter, freq in sorted(distribution.items()):
-            print(f"{letter}: {freq}%")
-      </code></pre>
-    
-      <p>The resulting distribution table is:</p>
-    
-      <table>
-        <thead>
-          <tr><th>Letter</th><th>Frequency (%)</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>A</td><td>13.64</td></tr>
-          <tr><td>C</td><td>9.09</td></tr>
-          <tr><td>D</td><td>4.55</td></tr>
-          <tr><td>E</td><td>9.09</td></tr>
-          <tr><td>F</td><td>4.55</td></tr>
-          <tr><td>I</td><td>9.09</td></tr>
-          <tr><td>N</td><td>9.09</td></tr>
-          <tr><td>O</td><td>4.55</td></tr>
-          <tr><td>P</td><td>4.55</td></tr>
-          <tr><td>S</td><td>13.64</td></tr>
-          <tr><td>T</td><td>9.09</td></tr>
-          <tr><td>U</td><td>4.55</td></tr>
-        </tbody>
-      </table>
-    </section>
-
-    <section id="caesar-cipher">
-      <h2>Caesar Cipher Encryption</h2>
-    
-      <p>
-        The Caesar Cipher shifts each letter in the alphabet by a fixed number of positions.
-        Here, the shift value is set to 3.
-      </p>
-    
-      <pre><code class="language-python">
-        def caesar_encrypt(text, shift):
-            alphabet = string.ascii_uppercase
-            encrypted = ""
-            for ch in text.upper():
-                if ch in alphabet:
-                    new_index = (alphabet.index(ch) + shift) % 26
-                    encrypted += alphabet[new_index]
-                else:
-                    encrypted += ch
-            return encrypted
-        
-        encrypted_text = caesar_encrypt(clean_text, 3)
-        print("Encrypted text:", encrypted_text)
-      </code></pre>
-    
-      <p><strong>Result:</strong></p>
-      <p style="text-align:center; font-weight:bold;">GdwdvflhqfhLviXqDqgSrzhuixo</p>
-    </section>
-
-    <section id="decode-bruteforce">
-      <h2>Decoding Without Knowing the Shift</h2>
-    
-      <p>
-        Since there are only 26 possible shifts, we can try them all to see which one produces readable text.
-      </p>
-    
-      <pre><code class="language-python">
-        def caesar_decrypt_bruteforce(text):
-            alphabet = string.ascii_uppercase
-            for shift in range(26):
-                decrypted = ""
-                for ch in text:
-                    if ch in alphabet:
-                        new_index = (alphabet.index(ch) - shift) % 26
-                        decrypted += alphabet[new_index]
-                    else:
-                        decrypted += ch
-                print(f"Shift {shift}: {decrypted}")
-        
-        caesar_decrypt_bruteforce(encrypted_text)
-      </code></pre>
-    
-      <p>The output will show all possible shifts. The correct one (shift = 3) reveals the original message:</p>
-      <p style="text-align:center; font-weight:bold;">DATA SCIENCE IS FUN AND POWERFUL</p>
-    </section>
-
-    <section id="decode-language">
-      <h2>Decoding Using Language Distribution</h2>
-    
-      <p>
-        To decode automatically, we compare the frequency of letters in the encrypted text 
-        with the typical frequency of letters in English. 
-        The shift that minimizes the difference is selected as the most probable key.
-      </p>
-    
-      <pre><code class="language-python">
-        english_freq = {
-            'E': 12.70, 'T': 9.06, 'A': 8.17, 'O': 7.51, 'I': 6.97, 'N': 6.75,
-            'S': 6.33, 'H': 6.09, 'R': 5.99, 'D': 4.25, 'L': 4.03, 'C': 2.78,
-            'U': 2.76, 'M': 2.41, 'W': 2.36, 'F': 2.23, 'G': 2.02, 'Y': 1.97,
-            'P': 1.93, 'B': 1.49, 'V': 0.98, 'K': 0.77, 'J': 0.15, 'X': 0.15,
-            'Q': 0.10, 'Z': 0.07
-        }
-        
-        def score_shift(text, shift):
-            shifted = caesar_encrypt(text, -shift)
-            freq = Counter(shifted)
-            total = sum(freq.values())
-            diff = 0
-            for l, f in english_freq.items():
-                diff += abs((freq.get(l, 0) / total * 100) - f)
-            return diff
-        
-        scores = {shift: score_shift(encrypted_text, shift) for shift in range(26)}
-        best_shift = min(scores, key=scores.get)
-        
-        print("Detected shift:", best_shift)
-        print("Decoded text:", caesar_encrypt(encrypted_text, -best_shift))
-      </code></pre>
-    
-      <p><strong>Result:</strong></p>
-      <p style="text-align:center; font-weight:bold;">Detected shift = 3 → DATA SCIENCE IS FUN AND POWERFUL</p>
-    </section>
-
 
     <a href="../../index.html" class="back">← Back to Home</a>
   </main>
