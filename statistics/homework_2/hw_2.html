@@ -100,6 +100,33 @@
       margin-top: 20px;
       color: #333;
     }
+
+    #cipher textarea, #decrypt textarea {
+      width: 90%;
+      max-width: 700px; /*limite max*/
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 1em;
+      font-family: 'Open Sans', sans-serif;
+      resize: vertical; /*espansione solo verticale*/
+    }
+
+    #freqTableContainer table {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    #freqTableContainer th, #freqTableContainer td {
+      border: 1px solid #ddd;
+      padding: 6px 10px;
+    }
+    
+    #freqTableContainer tbody tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
   </style>
 </head>
 
@@ -315,6 +342,7 @@
     
       <h3 style="margin-top:40px;">Letter Frequency Chart</h3>
       <canvas id="freqChart" width="600" height="300" style="margin:auto; display:block;"></canvas>
+      <div id="freqTableContainer" style="margin-top:20px; text-align:center;"></div>
     </section>
     
     <!-- ======================
@@ -336,18 +364,23 @@
             let newIndex = (alphabetUpper.indexOf(char) + shift) % 26;
             result += alphabetUpper[newIndex];
           } else {
-            result += char; // keep spaces and punctuation
+            result += char;
           }
         }
         return result;
       }
     
-      // Frequency counter
       function letterFrequency(text) {
         const freq = {};
+        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        
+        for (let letter of alphabet) {
+          freq[letter] = 0;
+        }
+      
         for (let char of text.toUpperCase()) {
-          if (char >= 'A' && char <= 'Z') {
-            freq[char] = (freq[char] || 0) + 1;
+          if (alphabet.includes(char)) {
+            freq[char]++;
           }
         }
         return freq;
@@ -383,18 +416,29 @@
           alert('Please enter some text!');
           return;
         }
-    
+      
         const encrypted = caesarEncrypt(text, shift);
         document.getElementById('encryptedOutput').innerText = encrypted;
-    
+      
+        // Calculate full alphabet frequencies
         const freq = letterFrequency(encrypted);
-        const letters = Object.keys(freq).sort();
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
         const counts = letters.map(l => freq[l]);
-    
+      
         // Update chart
         freqChart.data.labels = letters;
         freqChart.data.datasets[0].data = counts;
         freqChart.update();
+      
+        // Create HTML table under the chart
+        let tableHTML = "<table style='margin:20px auto; border-collapse:collapse; text-align:center;'>";
+        tableHTML += "<thead style='background:#e3f2fd;'><tr><th>Letter</th><th>Count</th></tr></thead><tbody>";
+        for (let i = 0; i < letters.length; i++) {
+          tableHTML += `<tr><td>${letters[i]}</td><td>${counts[i]}</td></tr>`;
+        }
+        tableHTML += "</tbody></table>";
+      
+        document.getElementById('freqTableContainer').innerHTML = tableHTML;
       });
     </script>
 
