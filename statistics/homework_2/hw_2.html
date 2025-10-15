@@ -418,13 +418,6 @@
           Encrypt
         </button>
     
-        <button id="decryptBtn" style="padding:6px 12px; background:#f57c00; color:white; border:none; border-radius:6px; cursor:pointer; margin-left:8px;">
-          Decrypt
-        </button>
-    
-        <button id="autoBtn" style="padding:6px 12px; background:#43a047; color:white; border:none; border-radius:6px; cursor:pointer; margin-left:8px;">
-          Auto Detect
-        </button>
       </div>
     
       <div style="text-align:center;">
@@ -452,38 +445,39 @@
         </thead>
         <tbody></tbody>
       </table>
-    
-      <!-- Decryption Section (separate) -->
-      <section id="decrypt" style="margin-top:60px;">
-        <h2>Caesar Cipher Decryption</h2>
-    
-        <p>
-          In this section, you can decrypt an encrypted message using a manual or automatic approach.  
-          Choose a shift value or let the system detect it automatically through <em>English letter frequency analysis</em>.
-        </p>
-    
-        <div style="text-align:center; margin:30px 0;">
-          <label for="cipherText"><strong>Enter encrypted text:</strong></label><br>
-          <textarea id="cipherText" rows="5" placeholder="Paste or type the encrypted message here..."></textarea><br><br>
-    
-          <label for="decryptShift"><strong>Shift (1–25):</strong></label>
-          <input type="number" id="decryptShift" min="1" max="25" value="3" style="width:60px; text-align:center;">
-    
-          <button id="manualDecryptBtn" style="padding:6px 12px; background:#f57c00; color:white; border:none; border-radius:6px; cursor:pointer;">
-            Manual Decrypt
-          </button>
-    
-          <button id="autoDecryptBtn" style="padding:6px 12px; background:#43a047; color:white; border:none; border-radius:6px; cursor:pointer; margin-left:8px;">
-            Auto Detect
-          </button>
-        </div>
-    
-        <div style="text-align:center;">
-          <h3>Decrypted Message</h3>
-          <div id="decryptOutput" class="output-box"></div>
-        </div>
-      </section>
     </section>
+    
+    <!-- Decryption Section -->
+    <section id="decrypt" style="margin-top:60px;">
+      <h2>Caesar Cipher Decryption</h2>
+  
+      <p>
+        In this section, you can decrypt an encrypted message using a manual or automatic approach.  
+        Choose a shift value or let the system detect it automatically through <em>English letter frequency analysis</em>.
+      </p>
+  
+      <div style="text-align:center; margin:30px 0;">
+        <label for="cipherText"><strong>Enter encrypted text:</strong></label><br>
+        <textarea id="cipherText" rows="5" placeholder="Paste or type the encrypted message here..."></textarea><br><br>
+  
+        <label for="decryptShift"><strong>Shift (1–25):</strong></label>
+        <input type="number" id="decryptShift" min="1" max="25" value="3" style="width:60px; text-align:center;">
+  
+        <button id="manualDecryptBtn" style="padding:6px 12px; background:#f57c00; color:white; border:none; border-radius:6px; cursor:pointer;">
+          Manual Decrypt
+        </button>
+  
+        <button id="autoDecryptBtn" style="padding:6px 12px; background:#43a047; color:white; border:none; border-radius:6px; cursor:pointer; margin-left:8px;">
+          Auto Detect
+        </button>
+      </div>
+  
+      <div style="text-align:center;">
+        <h3>Decrypted Message</h3>
+        <div id="decryptOutput" class="output-box"></div>
+      </div>
+    </section>
+    
 
     
     <!-- ================================
@@ -618,7 +612,7 @@
         }
       
         const shift = parseInt(shiftInput.value);
-        const encrypted = caesarEncrypt(text, shift);
+        const encrypted = caesarShift(text, shift, false);
         outputDiv.innerText = encrypted;
       
         updateChartAndTable(text, encrypted, viewSelect.value);
@@ -637,7 +631,7 @@
           alert('Please enter a text to decrypt!');
           return;
         }
-        const decrypted = caesarEncrypt(text, 26 - shift);
+        const decrypted = caesarShift(text, shift, true);
         document.getElementById('decryptOutput').innerText = decrypted;
       });
       
@@ -648,7 +642,7 @@
           return;
         }
         const best = autoDetectShift(text);
-        const result = caesarEncrypt(text, 26 - best);
+        const result = caesarShift(text, best, true);
         document.getElementById('decryptOutput').innerText =
           `Best detected shift: ${best}\n\nDecrypted message:\n${result}`;
       });
