@@ -141,6 +141,11 @@
       font-weight: 600;
     }
 
+    #cipher h3[style*="Letter Frequency Distribution"],
+    #cipher h4[style*="Letter Counts"] {
+      text-align: center;
+    }
+
     #cipher button, #decrypt button {
       margin-top: 10px;
     }
@@ -183,9 +188,9 @@
     
     #countTable {
       border-collapse: collapse;
-      width: 40%; /* ridotta */
+      width: 50%;
       margin: 15px auto;
-      font-size: 0.9em; /* testo più compatto */
+      font-size: 0.9em;
       box-shadow: 0 1px 4px rgba(0,0,0,0.1);
     }
     
@@ -429,7 +434,7 @@
       </div>
     
       <div style="text-align:center;">
-        <h3>Encrypted / Decrypted Text</h3>
+        <h3>Encrypted Text</h3>
         <div id="encryptedOutput" class="output-box"></div>
       </div>
     
@@ -643,35 +648,22 @@
         document.getElementById('decryptOutput').innerText = decrypted;
       });
       
-      document.getElementById('autoDecryptBtn').addEventListener('click', () => {
-        const text = document.getElementById('cipherText').value;
-        if (!text.trim()) {
-          alert('Please enter a text to decrypt!');
-          return;
-        }
-        const best = autoDetectShift(text);
-        const result = caesarShift(text, best, true);
-        document.getElementById('decryptOutput').innerText =
-          `Best detected shift: ${best}\n\nDecrypted message:\n${result}`;
-      });
-      
-      // --- Encryption button ---
-      document.getElementById('encryptBtn').addEventListener('click', processEncryption);
-
-      // --- Auto-detect shift ---
+      // --- English letter frequency reference ---
       const englishFreq = {
         E: 12.7, T: 9.06, A: 8.17, O: 7.51, I: 6.97, N: 6.75, S: 6.33,
         H: 6.09, R: 5.99, D: 4.25, L: 4.03, C: 2.78, U: 2.76, M: 2.41,
         W: 2.36, F: 2.23, G: 2.02, Y: 1.97, P: 1.93, B: 1.49, V: 0.98,
         K: 0.77, J: 0.15, X: 0.15, Q: 0.10, Z: 0.07
       };
-    
+      
+      // --- Auto Detect Shift ---
       function detectShift(text) {
         const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        let bestShift = 0, bestScore = Infinity;
-    
+        let bestShift = 0;
+        let bestScore = Infinity;
+      
         for (let shift = 1; shift < 26; shift++) {
-          let decrypted = caesarShift(text, shift, true);
+          const decrypted = caesarShift(text, shift, true);
           const freq = letterFrequencyPercent(decrypted);
           let score = 0;
           for (let letter in englishFreq) {
@@ -684,7 +676,19 @@
         }
         return bestShift;
       }
-    });
+      
+      document.getElementById('autoDecryptBtn').addEventListener('click', () => {
+        const text = document.getElementById('cipherText').value;
+        if (!text.trim()) {
+          alert('Please enter a text to decrypt!');
+          return;
+        }
+        const best = detectShift(text);
+        const decrypted = caesarShift(text, best, true);
+        document.getElementById('decryptOutput').innerText =
+          `Best detected shift: ${best}\n\nDecrypted message:\n${decrypted}`;
+      });
+
     </script>
 
     <section>
