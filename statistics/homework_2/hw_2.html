@@ -581,35 +581,59 @@
         });
       }
     
-      // --- Button handlers ---
+      // --- Button handlers for Caesar Cipher ---
       const textInput = document.getElementById('userText');
       const shiftInput = document.getElementById('shiftValue');
       const outputDiv = document.getElementById('encryptedOutput');
       const viewSelect = document.getElementById('viewSelect');
-    
-      function processCipher(decrypt=false, auto=false) {
-        let text = textInput.value;
-        if (!text.trim()) return alert("Please enter text first!");
-    
-        let shift = parseInt(shiftInput.value);
-        if (auto) shift = detectShift(text);
-    
-        const result = caesarShift(text, shift, decrypt);
-        outputDiv.innerText = result;
-    
-        updateChartAndTable(text, result, viewSelect.value);
+      
+      // --- Encryption (only) ---
+      function processEncryption() {
+        const text = textInput.value;
+        if (!text.trim()) {
+          alert("Please enter text first!");
+          return;
+        }
+      
+        const shift = parseInt(shiftInput.value);
+        const encrypted = caesarEncrypt(text, shift);
+        outputDiv.innerText = encrypted;
+      
+        updateChartAndTable(text, encrypted, viewSelect.value);
       }
-    
-      document.getElementById('encryptBtn').addEventListener('click', () => processCipher(false, false));
-      document.getElementById('decryptBtn').addEventListener('click', () => processCipher(true, false));
-      document.getElementById('autoBtn').addEventListener('click', () => processCipher(true, true));
-      document.getElementById('manualDecryptBtn').addEventListener('click', () => processCipher(true, false));
-      document.getElementById('autoDecryptBtn').addEventListener('click', () => processCipher(true, true));
-
+      
+      // --- Update visualization when changing dropdown ---
       viewSelect.addEventListener('change', () => {
         updateChartAndTable(textInput.value, outputDiv.innerText, viewSelect.value);
       });
-    
+      
+      // --- Manual and Auto Decryption ---
+      document.getElementById('manualDecryptBtn').addEventListener('click', () => {
+        const text = document.getElementById('cipherText').value;
+        const shift = parseInt(document.getElementById('decryptShift').value);
+        if (!text.trim()) {
+          alert('Please enter a text to decrypt!');
+          return;
+        }
+        const decrypted = caesarEncrypt(text, 26 - shift);
+        document.getElementById('decryptOutput').innerText = decrypted;
+      });
+      
+      document.getElementById('autoDecryptBtn').addEventListener('click', () => {
+        const text = document.getElementById('cipherText').value;
+        if (!text.trim()) {
+          alert('Please enter a text to decrypt!');
+          return;
+        }
+        const best = autoDetectShift(text);
+        const result = caesarEncrypt(text, 26 - best);
+        document.getElementById('decryptOutput').innerText =
+          `Best detected shift: ${best}\n\nDecrypted message:\n${result}`;
+      });
+      
+      // --- Encryption button ---
+      document.getElementById('encryptBtn').addEventListener('click', processEncryption);
+
       // --- Auto-detect shift ---
       const englishFreq = {
         E: 12.7, T: 9.06, A: 8.17, O: 7.51, I: 6.97, N: 6.75, S: 6.33,
