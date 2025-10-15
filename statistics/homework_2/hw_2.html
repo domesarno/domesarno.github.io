@@ -436,7 +436,6 @@
         - <a href="https://en.wikipedia.org/wiki/Data_set" target="_blank">Wikipedia – Dataset</a><br>
         - <a href="https://en.wikipedia.org/wiki/Univariate_distribution" target="_blank">Wikipedia – Univariate Distribution</a><br>
         - <a href="https://www.geeksforgeeks.org/what-is-dataset/" target="_blank">GeeksforGeeks – What is a Dataset</a><br>
-        - <a href="https://www.statisticshowto.com/univariate-distribution/" target="_blank">StatisticsHowTo – Univariate Distribution</a>
       </p>
     </section>
 
@@ -507,17 +506,31 @@
         const freqAfter = letterFrequencyPercent(afterText);
         const countBefore = letterFrequencyCount(beforeText);
         const countAfter = letterFrequencyCount(afterText);
+      
         const beforePerc = letters.map(l => freqBefore[l]);
         const afterPerc = letters.map(l => freqAfter[l]);
-
+      
+        // Aggiorna il grafico
         freqChart.data.datasets[0].data = (viewMode === 'after') ? [] : beforePerc;
         freqChart.data.datasets[1].data = (viewMode === 'before') ? [] : afterPerc;
         freqChart.update();
-
-        const tbody = document.querySelector("#countTable tbody");
-        tbody.innerHTML = "";
-        letters.forEach(l => {
-          tbody.insertAdjacentHTML('beforeend', `<tr><td>${l}</td><td>${countBefore[l]}</td><td>${countAfter[l]}</td></tr>`);
+      
+        // Riempie le due tabelle (A–L e M–Z)
+        const tbodyLeft = document.querySelector("#countTableLeft tbody");
+        const tbodyRight = document.querySelector("#countTableRight tbody");
+        tbodyLeft.innerHTML = "";
+        tbodyRight.innerHTML = "";
+      
+        letters.forEach((l, idx) => {
+          const row = `<tr>
+            <td>${l}</td>
+            <td>${countBefore[l]}</td>
+            <td>${freqBefore[l]}%</td>
+            <td>${countAfter[l]}</td>
+            <td>${freqAfter[l]}%</td>
+          </tr>`;
+          if (idx < 13) tbodyLeft.insertAdjacentHTML('beforeend', row); // A–M
+          else tbodyRight.insertAdjacentHTML('beforeend', row); // N–Z
         });
       }
 
