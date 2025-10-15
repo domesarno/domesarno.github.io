@@ -6,13 +6,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
 
   <title>Homework 2 - Dataset and Distribution</title>
-  <style>
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/sql.min.js"></script>
-    <script>hljs.highlightAll();</script>
 
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/sql.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  
+  <style>
+    
     pre {
       background-color: #1e1e1e;
       color: #fff;
@@ -151,8 +153,6 @@
       </p>
 
       <pre><code class="language-sql">
-        DROP TABLE IF EXISTS weeklySchedule;
-        
         CREATE TABLE weeklySchedule (
           idCourse INTEGER,
           courseName TEXT,
@@ -168,11 +168,33 @@
         (1047622, 'Cryptography', 5),
         (1027171, 'Network Infrastructures', 5);
       </code></pre>
-      
+
+      <h3>Full Dataset</h3>
+      <table border="1" cellspacing="0" cellpadding="8" style="border-collapse: collapse; width: 70%; text-align: center; margin: 20px auto;">
+        <thead style="background-color: #e3f2fd;">
+          <tr>
+            <th>idCourse</th>
+            <th>courseName</th>
+            <th>day</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1027171</td><td>Network Infrastructures</td><td>1</td></tr>
+          <tr><td>1022807</td><td>Distributed Systems</td><td>1</td></tr>
+          <tr><td>1047622</td><td>Cryptography</td><td>2</td></tr>
+          <tr><td>1022807</td><td>Distributed Systems</td><td>3</td></tr>
+          <tr><td>1055043</td><td>Statistics</td><td>4</td></tr>
+          <tr><td>1047622</td><td>Cryptography</td><td>5</td></tr>
+          <tr><td>1027171</td><td>Network Infrastructures</td><td>5</td></tr>
+        </tbody>
+      </table>
     </section>
 
+    <!-- ======================
+     SECTION 3 
+     ====================== -->
     <section id="distribution">
-      <h2>3. Univariate Distribution</h2>
+      <h2>Univariate Distribution</h2>
     
       <p>
         This section analyzes the dataset using two different univariate distributions:
