@@ -7,7 +7,21 @@
 
   <title>Homework 2 - Dataset and Distribution</title>
   <style>
-    /* ---------- BASE STYLE ---------- */
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/sql.min.js"></script>
+    <script>hljs.highlightAll();</script>
+
+    pre {
+      background-color: #1e1e1e;
+      color: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 0.95em;
+    }
+
     body {
       margin: 0;
       font-family: 'Open Sans', Calibri, 'Trebuchet MS', sans-serif;
@@ -129,7 +143,7 @@
          ====================== -->
 
     <section id="dataset">
-      <h2>2. Practical Implementation: Dataset Creation</h2>
+      <h2>Practical Implementation: Dataset Creation</h2>
     
       <p>
         The following SQL code was used to create the dataset <em>weeklySchedule</em>. 
@@ -137,15 +151,15 @@
         Each record represents a course and the corresponding day of the week it takes place, where days are coded from 1 (Monday) to 5 (Friday).
       </p>
 
-      <pre><code>
-        -- Create the dataset table
+      <pre><code class="language-sql">
+        DROP TABLE IF EXISTS weeklySchedule;
+        
         CREATE TABLE weeklySchedule (
           idCourse INTEGER,
           courseName TEXT,
           day INTEGER CHECK(day >= 1 AND day <= 5)
         );
-
-        -- Insert sample data
+        
         INSERT INTO weeklySchedule (idCourse, courseName, day) VALUES
         (1027171, 'Network Infrastructures', 1),
         (1022807, 'Distributed Systems', 1),
@@ -155,6 +169,7 @@
         (1047622, 'Cryptography', 5),
         (1027171, 'Network Infrastructures', 5);
       </code></pre>
+
 <!--
       <p>
         The following image shows the resulting table after executing the query:
