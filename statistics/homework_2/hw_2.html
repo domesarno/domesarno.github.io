@@ -140,7 +140,7 @@
   <main>
 
     <!-- ======================
-         SECTION 1
+         SECTION 1 - Concept of Dataset and Distribution
          ====================== -->
     <section>
       <h2>Concept of Dataset and Distribution</h2>
@@ -167,9 +167,9 @@
       </p>
     </section>
 
-    <!-- ======================
-         SECTION 2 
-         ====================== -->
+    <!-- ======================================================
+         SECTION 2 - Practical Implementation: Dataset Creation
+         ======================================================-->
     <section id="dataset">
       <h2>Practical Implementation: Dataset Creation</h2>
     
@@ -218,7 +218,7 @@
     </section>
 
     <!-- ======================
-     SECTION 3 
+     SECTION 3 - Univariate Distribution
      ====================== -->
     <section id="distribution">
       <h2>Univariate Distribution</h2>
@@ -316,67 +316,237 @@
     </section>
 
     <!-- ======================
-         SECTION 4
+         SECTION 4 - Caesar Cipher
          ====================== -->
     <section id="cipher">
-      <h2>Interactive Caesar Cipher Encryption</h2>
+      <h2>Interactive Caesar Cipher</h2>
     
       <p>
-        In this section, you can enter your own text and encrypt it using a Caesar Cipher.  
-        You can choose a shift value (1–25), and the tool will show the encrypted text and the frequency distribution of letters.
+        Type your text below and choose a shift (1–25) to encrypt or decrypt it.  
+        You can visualize the <strong>letter frequency distribution</strong> before and after encryption.
       </p>
     
       <div style="text-align:center; margin:30px 0;">
         <label for="userText"><strong>Enter your text:</strong></label><br>
-        <textarea id="userText" rows="5" cols="60" placeholder="Type your text here..."></textarea><br><br>
+        <textarea id="userText" rows="5" placeholder="Type your text here..."></textarea><br><br>
     
-        <label for="shiftValue"><strong>Choose shift (1–25):</strong></label>
+        <label for="shiftValue"><strong>Shift (1–25):</strong></label>
         <input type="number" id="shiftValue" min="1" max="25" value="3" style="width:60px; text-align:center;">
-        <button id="encryptBtn" style="margin-left:10px; padding:6px 12px; background:#1a73e8; color:white; border:none; border-radius:6px; cursor:pointer;">
+    
+        <button id="encryptBtn" style="padding:6px 12px; background:#1a73e8; color:white; border:none; border-radius:6px; cursor:pointer;">
           Encrypt
         </button>
+    
+        <button id="decryptBtn" style="padding:6px 12px; background:#f57c00; color:white; border:none; border-radius:6px; cursor:pointer; margin-left:8px;">
+          Decrypt
+        </button>
+    
+        <button id="autoBtn" style="padding:6px 12px; background:#43a047; color:white; border:none; border-radius:6px; cursor:pointer; margin-left:8px;">
+          Auto Detect
+        </button>
       </div>
     
-      <h3>Encrypted Text:</h3>
-      <div id="encryptedOutput" style="background:#f0f4ff; padding:15px; border-radius:8px; min-height:40px; text-align:center; font-weight:bold; font-size:1.1em;"></div>
+      <div style="display:flex; justify-content:space-around; flex-wrap:wrap; gap:20px; text-align:center;">
+        <div style="flex:1; min-width:400px;">
+          <h3>Encrypted / Decrypted Text</h3>
+          <div id="encryptedOutput" style="background:#f0f4ff; padding:15px; border-radius:8px; min-height:120px; max-height:200px; overflow-y:auto; word-wrap:break-word; font-weight:bold; font-size:1.05em;"></div>
+        </div>
+      </div>
     
-      <h3 style="margin-top:40px;">Letter Frequency Chart</h3>
+      <h3 style="margin-top:40px;">Letter Frequency Distribution</h3>
+    
+      <div style="text-align:center; margin-bottom:15px;">
+        <label for="viewSelect"><strong>View:</strong></label>
+        <select id="viewSelect" style="margin-left:8px; padding:4px 8px;">
+          <option value="before">Before Encryption</option>
+          <option value="after">After Encryption</option>
+          <option value="both" selected>Compare Both</option>
+        </select>
+      </div>
+    
       <canvas id="freqChart" width="600" height="300" style="margin:auto; display:block;"></canvas>
+    
+      <h4 style="margin-top:30px;">Letter Counts</h4>
+      <table id="countTable" style="margin:auto; border-collapse:collapse; text-align:center;">
+        <thead style="background:#e3f2fd;">
+          <tr><th>Letter</th><th>Before</th><th>After</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
     </section>
-
-    <!-- ======================
-     SECTION 5 - Caesar Cipher Decryption
-     ====================== -->
-    <section id="decrypt">
-      <h2>Caesar Cipher Decryption</h2>
     
-      <p>
-        In this section, you can decrypt an encrypted message.  
-        You can either test all possible shifts (<strong>brute force</strong>),  
-        or let the system <strong>automatically detect</strong> the most probable shift using
-        <em>English letter frequency analysis</em>.
-      </p>
+    <!-- ================================
+         SCRIPT - Caesar Cipher + Chart
+         ================================ -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
     
-      <div style="text-align:center; margin:30px 0;">
-        <label for="cipherText"><strong>Enter encrypted text:</strong></label><br>
-        <textarea id="cipherText" rows="5" placeholder="Paste or type the encrypted message here..."></textarea><br><br>
+      // --- Core encryption/decryption functions ---
+      function caesarShift(text, shift, decrypt=false) {
+        const lower = 'abcdefghijklmnopqrstuvwxyz';
+        const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        let result = '';
     
-        <button id="bruteBtn" style="padding:6px 12px; background:#1a73e8; color:white; border:none; border-radius:6px; cursor:pointer;">
-          Try All Shifts
-        </button>
+        if (decrypt) shift = 26 - shift; // invert shift for decryption
     
-        <button id="autoBtn" style="padding:6px 12px; background:#43a047; color:white; border:none; border-radius:6px; cursor:pointer; margin-left:10px;">
-          Auto Detect Shift
-        </button>
-      </div>
+        for (let char of text) {
+          if (lower.includes(char)) {
+            result += lower[(lower.indexOf(char) + shift) % 26];
+          } else if (upper.includes(char)) {
+            result += upper[(upper.indexOf(char) + shift) % 26];
+          } else {
+            result += char;
+          }
+        }
+        return result;
+      }
     
-      <h3>Decryption Results:</h3>
-      <div id="decryptOutput" style="background:#f0f4ff; padding:15px; border-radius:8px; min-height:60px; text-align:left; font-family:monospace; white-space:pre;"></div>
-    </section>
-
-
-
+      function letterFrequencyPercent(text) {
+        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const freq = {};
+        for (let l of alphabet) freq[l] = 0;
     
+        let total = 0;
+        for (let c of text.toUpperCase()) {
+          if (alphabet.includes(c)) {
+            freq[c]++;
+            total++;
+          }
+        }
+        for (let l of alphabet) {
+          freq[l] = total ? (freq[l] / total * 100).toFixed(2) : 0;
+        }
+        return freq;
+      }
+    
+      function letterFrequencyCount(text) {
+        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const freq = {};
+        for (let l of alphabet) freq[l] = 0;
+        for (let c of text.toUpperCase()) {
+          if (alphabet.includes(c)) freq[c]++;
+        }
+        return freq;
+      }
+    
+      // --- Chart setup ---
+      const ctx = document.getElementById('freqChart').getContext('2d');
+      const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+      let freqChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: letters,
+          datasets: [
+            {
+              label: 'Before Encryption (%)',
+              data: [],
+              backgroundColor: 'rgba(66,133,244,0.6)',
+              borderColor: '#1a73e8',
+              borderWidth: 1
+            },
+            {
+              label: 'After Encryption (%)',
+              data: [],
+              backgroundColor: 'rgba(255,152,0,0.6)',
+              borderColor: '#f57c00',
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              title: { display: true, text: 'Frequency (%)' },
+              beginAtZero: true
+            }
+          },
+          plugins: {
+            legend: { position: 'bottom' }
+          }
+        }
+      });
+    
+      // --- Update Chart & Table ---
+      function updateChartAndTable(beforeText, afterText, viewMode) {
+        const freqBefore = letterFrequencyPercent(beforeText);
+        const freqAfter = letterFrequencyPercent(afterText);
+        const countBefore = letterFrequencyCount(beforeText);
+        const countAfter = letterFrequencyCount(afterText);
+    
+        const beforePerc = letters.map(l => freqBefore[l]);
+        const afterPerc = letters.map(l => freqAfter[l]);
+    
+        // update chart datasets based on selected view
+        freqChart.data.datasets[0].data = (viewMode === 'after') ? [] : beforePerc;
+        freqChart.data.datasets[1].data = (viewMode === 'before') ? [] : afterPerc;
+        freqChart.update();
+    
+        // update count table
+        const tbody = document.querySelector("#countTable tbody");
+        tbody.innerHTML = "";
+        letters.forEach(l => {
+          const row = `<tr><td>${l}</td><td>${countBefore[l]}</td><td>${countAfter[l]}</td></tr>`;
+          tbody.insertAdjacentHTML('beforeend', row);
+        });
+      }
+    
+      // --- Button handlers ---
+      const textInput = document.getElementById('userText');
+      const shiftInput = document.getElementById('shiftValue');
+      const outputDiv = document.getElementById('encryptedOutput');
+      const viewSelect = document.getElementById('viewSelect');
+    
+      function processCipher(decrypt=false, auto=false) {
+        let text = textInput.value;
+        if (!text.trim()) return alert("Please enter text first!");
+    
+        let shift = parseInt(shiftInput.value);
+        if (auto) shift = detectShift(text);
+    
+        const result = caesarShift(text, shift, decrypt);
+        outputDiv.innerText = result;
+    
+        updateChartAndTable(text, result, viewSelect.value);
+      }
+    
+      document.getElementById('encryptBtn').addEventListener('click', () => processCipher(false, false));
+      document.getElementById('decryptBtn').addEventListener('click', () => processCipher(true, false));
+      document.getElementById('autoBtn').addEventListener('click', () => processCipher(true, true));
+    
+      viewSelect.addEventListener('change', () => {
+        updateChartAndTable(textInput.value, outputDiv.innerText, viewSelect.value);
+      });
+    
+      // --- Auto-detect shift ---
+      const englishFreq = {
+        E: 12.7, T: 9.06, A: 8.17, O: 7.51, I: 6.97, N: 6.75, S: 6.33,
+        H: 6.09, R: 5.99, D: 4.25, L: 4.03, C: 2.78, U: 2.76, M: 2.41,
+        W: 2.36, F: 2.23, G: 2.02, Y: 1.97, P: 1.93, B: 1.49, V: 0.98,
+        K: 0.77, J: 0.15, X: 0.15, Q: 0.10, Z: 0.07
+      };
+    
+      function detectShift(text) {
+        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        let bestShift = 0, bestScore = Infinity;
+    
+        for (let shift = 1; shift < 26; shift++) {
+          let decrypted = caesarShift(text, shift, true);
+          const freq = letterFrequencyPercent(decrypted);
+          let score = 0;
+          for (let letter in englishFreq) {
+            score += Math.abs(englishFreq[letter] - freq[letter]);
+          }
+          if (score < bestScore) {
+            bestScore = score;
+            bestShift = shift;
+          }
+        }
+        return bestShift;
+      }
+    });
+    </script>
 
     <section>
       <h2>Sources</h2>
@@ -394,267 +564,5 @@
   <footer>
     <p>© 2025 - Domenico Sarno | Homework 2 - 15th October</p>
   </footer>
-
-
-
-  <!-- ======================
-         SCRIPT - Caesar Cipher + Chart
-         ====================== -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-      // Caesar cipher function
-      function caesarEncrypt(text, shift) {
-        const alphabetLower = 'abcdefghijklmnopqrstuvwxyz';
-        const alphabetUpper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        let result = '';
-      
-        for (let char of text) {
-          if (alphabetLower.includes(char)) {
-            let newIndex = (alphabetLower.indexOf(char) + shift) % 26;
-            result += alphabetLower[newIndex];
-          } else if (alphabetUpper.includes(char)) {
-            let newIndex = (alphabetUpper.indexOf(char) + shift) % 26;
-            result += alphabetUpper[newIndex];
-          } else {
-            result += char;
-          }
-        }
-        return result;
-      }
-    
-      // Frequency counter — includes all 26 letters even if absent
-      function letterFrequency(text) {
-        const freq = {};
-        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        for (let letter of alphabet) freq[letter] = 0;
-        for (let char of text.toUpperCase()) {
-          if (alphabet.includes(char)) freq[char]++;
-        }
-        return freq;
-      }
-    
-      // Compute percentage frequencies
-      function letterFrequencyPercent(text) {
-        const freq = letterFrequency(text);
-        const total = Object.values(freq).reduce((a, b) => a + b, 0);
-        const freqPercent = {};
-        for (let letter in freq) {
-          freqPercent[letter] = total ? ((freq[letter] / total) * 100).toFixed(2) : 0;
-        }
-        return freqPercent;
-      }
-    
-      // Initialize chart
-      const ctx = document.getElementById('freqChart').getContext('2d');
-      let freqChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''),
-          datasets: [
-            {
-              label: 'Before Encryption (Count)',
-              data: [],
-              backgroundColor: 'rgba(66,133,244,0.5)',
-              borderColor: '#1a73e8',
-              borderWidth: 1
-            },
-            {
-              label: 'After Encryption (Count)',
-              data: [],
-              backgroundColor: 'rgba(255,152,0,0.5)',
-              borderColor: '#fb8c00',
-              borderWidth: 1
-            },
-            {
-              label: 'After Encryption (%)',
-              data: [],
-              type: 'line',
-              borderColor: '#2e7d32',
-              borderWidth: 2,
-              fill: false,
-              yAxisID: 'percentage'
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            x: { title: { display: true, text: 'Letters' } },
-            y: {
-              title: { display: true, text: 'Count' },
-              beginAtZero: true
-            },
-            percentage: {
-              position: 'right',
-              title: { display: true, text: 'Frequency (%)' },
-              beginAtZero: true,
-              grid: { drawOnChartArea: false }
-            }
-          },
-          plugins: {
-            legend: {
-              position: 'bottom'
-            },
-            tooltip: {
-              callbacks: {
-                label: function(context) {
-                  const dataset = context.dataset;
-                  const value = context.parsed.y;
-                  if (dataset.label.includes('%')) return `${dataset.label}: ${value}%`;
-                  return `${dataset.label}: ${value}`;
-                }
-              }
-            }
-          }
-        }
-      });
-    
-      // Main encryption + chart update
-      document.getElementById('encryptBtn').addEventListener('click', () => {
-        const text = document.getElementById('userText').value;
-        const shift = parseInt(document.getElementById('shiftValue').value);
-        if (!text.trim()) {
-          alert('Please enter some text!');
-          return;
-        }
-    
-        const encrypted = caesarEncrypt(text, shift);
-        document.getElementById('encryptedOutput').innerText = encrypted;
-    
-        // Compute both distributions
-        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-        const freqBefore = letterFrequency(text);
-        const freqAfter = letterFrequency(encrypted);
-        const percentAfter = letterFrequencyPercent(encrypted);
-    
-        const beforeCounts = letters.map(l => freqBefore[l]);
-        const afterCounts = letters.map(l => freqAfter[l]);
-        const afterPerc = letters.map(l => percentAfter[l]);
-    
-        // Update chart
-        freqChart.data.datasets[0].data = beforeCounts;
-        freqChart.data.datasets[1].data = afterCounts;
-        freqChart.data.datasets[2].data = afterPerc;
-        freqChart.update();
-      });
-    </script>
-
-
-    <script>
-      // Decrypt a text by trying all 25 shifts
-      function caesarDecryptAll(text) {
-        const alphabetLower = 'abcdefghijklmnopqrstuvwxyz';
-        const alphabetUpper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        let results = "";
-    
-        for (let shift = 1; shift < 26; shift++) {
-          let decrypted = "";
-          for (let char of text) {
-            if (alphabetLower.includes(char)) {
-              let newIndex = (alphabetLower.indexOf(char) - shift + 26) % 26;
-              decrypted += alphabetLower[newIndex];
-            } else if (alphabetUpper.includes(char)) {
-              let newIndex = (alphabetUpper.indexOf(char) - shift + 26) % 26;
-              decrypted += alphabetUpper[newIndex];
-            } else {
-              decrypted += char;
-            }
-          }
-          results += `Shift ${shift}: ${decrypted}\n`;
-        }
-    
-        return results;
-      }
-    
-      // English letter frequency (percentages)
-      const englishFreq = {
-        E: 12.7, T: 9.06, A: 8.17, O: 7.51, I: 6.97, N: 6.75,
-        S: 6.33, H: 6.09, R: 5.99, D: 4.25, L: 4.03, C: 2.78,
-        U: 2.76, M: 2.41, W: 2.36, F: 2.23, G: 2.02, Y: 1.97,
-        P: 1.93, B: 1.49, V: 0.98, K: 0.77, J: 0.15, X: 0.15,
-        Q: 0.10, Z: 0.07
-      };
-    
-      // Compute text frequency distribution
-      function freqAnalysis(text) {
-        const freq = {};
-        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        let total = 0;
-    
-        for (let letter of alphabet) freq[letter] = 0;
-    
-        for (let ch of text.toUpperCase()) {
-          if (alphabet.includes(ch)) {
-            freq[ch]++;
-            total++;
-          }
-        }
-    
-        // convert to percentage
-        for (let letter of alphabet) {
-          freq[letter] = (freq[letter] / total) * 100;
-        }
-    
-        return freq;
-      }
-    
-      // Compare a frequency map to English
-      function compareFreq(textFreq) {
-        let diff = 0;
-        for (let letter in englishFreq) {
-          const value = textFreq[letter] || 0;
-          diff += Math.abs(englishFreq[letter] - value);
-        }
-        return diff;
-      }
-    
-      // Try all shifts and pick one with smallest difference
-      function autoDetectShift(text) {
-        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        let bestShift = 0;
-        let bestScore = Infinity;
-    
-        for (let shift = 1; shift < 26; shift++) {
-          let decrypted = "";
-          for (let ch of text.toUpperCase()) {
-            if (alphabet.includes(ch)) {
-              let newIndex = (alphabet.indexOf(ch) - shift + 26) % 26;
-              decrypted += alphabet[newIndex];
-            } else {
-              decrypted += ch;
-            }
-          }
-          const freq = freqAnalysis(decrypted);
-          const score = compareFreq(freq);
-    
-          if (score < bestScore) {
-            bestScore = score;
-            bestShift = shift;
-          }
-        }
-    
-        return bestShift;
-      }
-    
-      // Event handlers for buttons
-      document.getElementById('bruteBtn').addEventListener('click', () => {
-        const text = document.getElementById('cipherText').value;
-        if (!text.trim()) return alert('Please enter a text to decrypt!');
-        const output = caesarDecryptAll(text);
-        document.getElementById('decryptOutput').innerText = output;
-      });
-    
-      document.getElementById('autoBtn').addEventListener('click', () => {
-        const text = document.getElementById('cipherText').value;
-        if (!text.trim()) return alert('Please enter a text to decrypt!');
-        const best = autoDetectShift(text);
-        const result = caesarEncrypt(text, 26 - best);
-        document.getElementById('decryptOutput').innerText =
-          `Best detected shift: ${best}\n\nDecrypted message:\n${result}`;
-      });
-    </script>
-
-  
-
 </body>
 </html>
