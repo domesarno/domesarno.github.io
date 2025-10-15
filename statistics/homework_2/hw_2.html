@@ -342,7 +342,6 @@
     
       <h3 style="margin-top:40px;">Letter Frequency Chart</h3>
       <canvas id="freqChart" width="600" height="300" style="margin:auto; display:block;"></canvas>
-      <div id="freqTableContainer" style="margin-top:20px; text-align:center;"></div>
     </section>
     
     <!-- ======================
@@ -355,7 +354,7 @@
         const alphabetLower = 'abcdefghijklmnopqrstuvwxyz';
         const alphabetUpper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         let result = '';
-    
+      
         for (let char of text) {
           if (alphabetLower.includes(char)) {
             let newIndex = (alphabetLower.indexOf(char) + shift) % 26;
@@ -370,20 +369,26 @@
         return result;
       }
     
+      // Frequency counter — includes all 26 letters even if absent
       function letterFrequency(text) {
         const freq = {};
         const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        
-        for (let letter of alphabet) {
-          freq[letter] = 0;
-        }
-      
+        for (let letter of alphabet) freq[letter] = 0;
         for (let char of text.toUpperCase()) {
-          if (alphabet.includes(char)) {
-            freq[char]++;
-          }
+          if (alphabet.includes(char)) freq[char]++;
         }
         return freq;
+      }
+    
+      // Compute percentage frequencies
+      function letterFrequencyPercent(text) {
+        const freq = letterFrequency(text);
+        const total = Object.values(freq).reduce((a, b) => a + b, 0);
+        const freqPercent = {};
+        for (let letter in freq) {
+          freqPercent[letter] = total ? ((freq[letter] / total) * 100).toFixed(2) : 0;
+        }
+        return freqPercent;
       }
     
       // Initialize chart
@@ -391,19 +396,62 @@
       let freqChart = new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: [],
-          datasets: [{
-            label: 'Letter Frequency',
-            data: [],
-            backgroundColor: '#64b5f6',
-            borderColor: '#1a73e8',
-            borderWidth: 1
-          }]
+          labels: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''),
+          datasets: [
+            {
+              label: 'Before Encryption (Count)',
+              data: [],
+              backgroundColor: 'rgba(66,133,244,0.5)',
+              borderColor: '#1a73e8',
+              borderWidth: 1
+            },
+            {
+              label: 'After Encryption (Count)',
+              data: [],
+              backgroundColor: 'rgba(255,152,0,0.5)',
+              borderColor: '#fb8c00',
+              borderWidth: 1
+            },
+            {
+              label: 'After Encryption (%)',
+              data: [],
+              type: 'line',
+              borderColor: '#2e7d32',
+              borderWidth: 2,
+              fill: false,
+              yAxisID: 'percentage'
+            }
+          ]
         },
         options: {
+          responsive: true,
           scales: {
             x: { title: { display: true, text: 'Letters' } },
-            y: { title: { display: true, text: 'Count' }, beginAtZero: true }
+            y: {
+              title: { display: true, text: 'Count' },
+              beginAtZero: true
+            },
+            percentage: {
+              position: 'right',
+              title: { display: true, text: 'Frequency (%)' },
+              beginAtZero: true,
+              grid: { drawOnChartArea: false }
+            }
+          },
+          plugins: {
+            legend: {
+              position: 'bottom'
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const dataset = context.dataset;
+                  const value = context.parsed.y;
+                  if (dataset.label.includes('%')) return `${dataset.label}: ${value}%`;
+                  return `${dataset.label}: ${value}`;
+                }
+              }
+            }
           }
         }
       });
@@ -416,29 +464,25 @@
           alert('Please enter some text!');
           return;
         }
-      
+    
         const encrypted = caesarEncrypt(text, shift);
         document.getElementById('encryptedOutput').innerText = encrypted;
-      
-        // Calculate full alphabet frequencies
-        const freq = letterFrequency(encrypted);
+    
+        // Compute both distributions
         const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-        const counts = letters.map(l => freq[l]);
-      
+        const freqBefore = letterFrequency(text);
+        const freqAfter = letterFrequency(encrypted);
+        const percentAfter = letterFrequencyPercent(encrypted);
+    
+        const beforeCounts = letters.map(l => freqBefore[l]);
+        const afterCounts = letters.map(l => freqAfter[l]);
+        const afterPerc = letters.map(l => percentAfter[l]);
+    
         // Update chart
-        freqChart.data.labels = letters;
-        freqChart.data.datasets[0].data = counts;
+        freqChart.data.datasets[0].data = beforeCounts;
+        freqChart.data.datasets[1].data = afterCounts;
+        freqChart.data.datasets[2].data = afterPerc;
         freqChart.update();
-      
-        // Create HTML table under the chart
-        let tableHTML = "<table style='margin:20px auto; border-collapse:collapse; text-align:center;'>";
-        tableHTML += "<thead style='background:#e3f2fd;'><tr><th>Letter</th><th>Count</th></tr></thead><tbody>";
-        for (let i = 0; i < letters.length; i++) {
-          tableHTML += `<tr><td>${letters[i]}</td><td>${counts[i]}</td></tr>`;
-        }
-        tableHTML += "</tbody></table>";
-      
-        document.getElementById('freqTableContainer').innerHTML = tableHTML;
       });
     </script>
 
