@@ -442,6 +442,158 @@
       });
     </script>
 
+
+    <script>
+      // Decrypt a text by trying all 25 shifts
+      function caesarDecryptAll(text) {
+        const alphabetLower = 'abcdefghijklmnopqrstuvwxyz';
+        const alphabetUpper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        let results = "";
+    
+        for (let shift = 1; shift < 26; shift++) {
+          let decrypted = "";
+          for (let char of text) {
+            if (alphabetLower.includes(char)) {
+              let newIndex = (alphabetLower.indexOf(char) - shift + 26) % 26;
+              decrypted += alphabetLower[newIndex];
+            } else if (alphabetUpper.includes(char)) {
+              let newIndex = (alphabetUpper.indexOf(char) - shift + 26) % 26;
+              decrypted += alphabetUpper[newIndex];
+            } else {
+              decrypted += char;
+            }
+          }
+          results += `Shift ${shift}: ${decrypted}\n`;
+        }
+    
+        return results;
+      }
+    
+      // English letter frequency (percentages)
+      const englishFreq = {
+        E: 12.7, T: 9.06, A: 8.17, O: 7.51, I: 6.97, N: 6.75,
+        S: 6.33, H: 6.09, R: 5.99, D: 4.25, L: 4.03, C: 2.78,
+        U: 2.76, M: 2.41, W: 2.36, F: 2.23, G: 2.02, Y: 1.97,
+        P: 1.93, B: 1.49, V: 0.98, K: 0.77, J: 0.15, X: 0.15,
+        Q: 0.10, Z: 0.07
+      };
+    
+      // Compute text frequency distribution
+      function freqAnalysis(text) {
+        const freq = {};
+        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        let total = 0;
+    
+        for (let letter of alphabet) freq[letter] = 0;
+    
+        for (let ch of text.toUpperCase()) {
+          if (alphabet.includes(ch)) {
+            freq[ch]++;
+            total++;
+          }
+        }
+    
+        // convert to percentage
+        for (let letter of alphabet) {
+          freq[letter] = (freq[letter] / total) * 100;
+        }
+    
+        return freq;
+      }
+    
+      // Compare a frequency map to English
+      function compareFreq(textFreq) {
+        let diff = 0;
+        for (let letter in englishFreq) {
+          const value = textFreq[letter] || 0;
+          diff += Math.abs(englishFreq[letter] - value);
+        }
+        return diff;
+      }
+    
+      // Try all shifts and pick one with smallest difference
+      function autoDetectShift(text) {
+        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        let bestShift = 0;
+        let bestScore = Infinity;
+    
+        for (let shift = 1; shift < 26; shift++) {
+          let decrypted = "";
+          for (let ch of text.toUpperCase()) {
+            if (alphabet.includes(ch)) {
+              let newIndex = (alphabet.indexOf(ch) - shift + 26) % 26;
+              decrypted += alphabet[newIndex];
+            } else {
+              decrypted += ch;
+            }
+          }
+          const freq = freqAnalysis(decrypted);
+          const score = compareFreq(freq);
+    
+          if (score < bestScore) {
+            bestScore = score;
+            bestShift = shift;
+          }
+        }
+    
+        return bestShift;
+      }
+    
+      // Event handlers for buttons
+      document.getElementById('bruteBtn').addEventListener('click', () => {
+        const text = document.getElementById('cipherText').value;
+        if (!text.trim()) return alert('Please enter a text to decrypt!');
+        const output = caesarDecryptAll(text);
+        document.getElementById('decryptOutput').innerText = output;
+      });
+    
+      document.getElementById('autoBtn').addEventListener('click', () => {
+        const text = document.getElementById('cipherText').value;
+        if (!text.trim()) return alert('Please enter a text to decrypt!');
+        const best = autoDetectShift(text);
+        const result = caesarEncrypt(text, 26 - best);
+        document.getElementById('decryptOutput').innerText =
+          `Best detected shift: ${best}\n\nDecrypted message:\n${result}`;
+      });
+    </script>
+
+
+
+
+    <!-- ======================
+     SECTION 5 - Caesar Cipher Decryption
+     ====================== -->
+    <section id="decrypt">
+      <h2>Caesar Cipher Decryption</h2>
+    
+      <p>
+        In this section, you can decrypt an encrypted message.  
+        You can either test all possible shifts (<strong>brute force</strong>),  
+        or let the system <strong>automatically detect</strong> the most probable shift using
+        <em>English letter frequency analysis</em>.
+      </p>
+    
+      <div style="text-align:center; margin:30px 0;">
+        <label for="cipherText"><strong>Enter encrypted text:</strong></label><br>
+        <textarea id="cipherText" rows="5" placeholder="Paste or type the encrypted message here..."></textarea><br><br>
+    
+        <button id="bruteBtn" style="padding:6px 12px; background:#1a73e8; color:white; border:none; border-radius:6px; cursor:pointer;">
+          Try All Shifts
+        </button>
+    
+        <button id="autoBtn" style="padding:6px 12px; background:#43a047; color:white; border:none; border-radius:6px; cursor:pointer; margin-left:10px;">
+          Auto Detect Shift
+        </button>
+      </div>
+    
+      <h3>Decryption Results:</h3>
+      <div id="decryptOutput" style="background:#f0f4ff; padding:15px; border-radius:8px; min-height:60px; text-align:left; font-family:monospace; white-space:pre;"></div>
+    </section>
+
+
+
+    
+
     <section>
       <h2>Sources</h2>
       <p style="font-size: 0.9em; color: #666;">
