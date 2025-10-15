@@ -93,16 +93,6 @@
       text-align: center;
     }
 
-    #chartTableContainer {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      width: 95%;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    
     #tablesContainer {
       display: flex;
       justify-content: center;
@@ -462,18 +452,6 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function() {
-      // --- Default text and auto encryption on load ---
-      const defaultText = "HELLO THIS IS AN EXAMPLE TEXT TO ENCRYPT WITH A CAESAR CIPHER.";
-      const defaultShift = 3;
-      document.getElementById('userText').value = defaultText;
-      document.getElementById('shiftValue').value = defaultShift;
-      
-      const defaultEncrypted = caesarShift(defaultText, defaultShift, false);
-      document.getElementById('encryptedOutput').innerText = defaultEncrypted;
-      updateChartAndTable(defaultText, defaultEncrypted, 'both');
-      
-      // --- Default for decrypt section ---
-      document.getElementById('cipherText').value = defaultEncrypted;
       function caesarShift(text, shift, decrypt=false) {
         const lower = 'abcdefghijklmnopqrstuvwxyz';
         const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -529,32 +507,19 @@
         const freqAfter = letterFrequencyPercent(afterText);
         const countBefore = letterFrequencyCount(beforeText);
         const countAfter = letterFrequencyCount(afterText);
-      
         const beforePerc = letters.map(l => freqBefore[l]);
         const afterPerc = letters.map(l => freqAfter[l]);
-      
+
         freqChart.data.datasets[0].data = (viewMode === 'after') ? [] : beforePerc;
         freqChart.data.datasets[1].data = (viewMode === 'before') ? [] : afterPerc;
         freqChart.update();
-      
-        const tbodyLeft = document.querySelector("#countTableLeft tbody");
-        const tbodyRight = document.querySelector("#countTableRight tbody");
-        tbodyLeft.innerHTML = "";
-        tbodyRight.innerHTML = "";
-      
-        letters.forEach((l, idx) => {
-          const row = `<tr>
-            <td>${l}</td>
-            <td>${countBefore[l]}</td>
-            <td>${freqBefore[l]}%</td>
-            <td>${countAfter[l]}</td>
-            <td>${freqAfter[l]}%</td>
-          </tr>`;
-          if (idx < 13) tbodyLeft.insertAdjacentHTML('beforeend', row);
-          else tbodyRight.insertAdjacentHTML('beforeend', row);
+
+        const tbody = document.querySelector("#countTable tbody");
+        tbody.innerHTML = "";
+        letters.forEach(l => {
+          tbody.insertAdjacentHTML('beforeend', `<tr><td>${l}</td><td>${countBefore[l]}</td><td>${countAfter[l]}</td></tr>`);
         });
       }
-
 
       const textInput = document.getElementById('userText');
       const shiftInput = document.getElementById('shiftValue');
