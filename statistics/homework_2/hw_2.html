@@ -141,7 +141,6 @@
     <!-- ======================
          SECTION 2 
          ====================== -->
-
     <section id="dataset">
       <h2>Practical Implementation: Dataset Creation</h2>
     
@@ -169,16 +168,102 @@
         (1047622, 'Cryptography', 5),
         (1027171, 'Network Infrastructures', 5);
       </code></pre>
+      
+    </section>
 
-<!--
+    <section id="distribution">
+      <h2>3. Univariate Distribution</h2>
+    
       <p>
-        The following image shows the resulting table after executing the query:
+        This section analyzes the dataset using two different univariate distributions:
+        one based on <strong>courseName</strong> (how many times each course appears),
+        and one based on <strong>day</strong> (how many courses occur on each day of the week).
       </p>
 
-      <img src="images/dataset_table.png" alt="SQLite dataset table result" width="600" style="border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+      <!-- Dropdown menu -->
+      <label for="distributionSelect"><strong>Select variable:</strong></label>
+      <select id="distributionSelect" style="margin: 10px; padding: 6px;">
+        <option value="courseName">Distribution by courseName</option>
+        <option value="day">Distribution by day</option>
+      </select>
 
+      <!-- SQL CODE: Distribution by courseName -->
+      <div id="sql-courseName">
+        <pre><code class="language-sql">
+          SELECT 
+            courseName,
+            COUNT(*) AS occurrences
+          FROM weeklySchedule
+          GROUP BY courseName
+          ORDER BY occurrences DESC;
+        </code></pre>
+
+        <table border="1" cellspacing="0" cellpadding="8" style="border-collapse: collapse; width: 70%; text-align: center; margin: 0 auto;">
+          <thead style="background-color: #e3f2fd;">
+            <tr>
+              <th>courseName</th>
+              <th>occurrences</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Network Infrastructures</td><td>2</td></tr>
+            <tr><td>Distributed Systems</td><td>2</td></tr>
+            <tr><td>Cryptography</td><td>2</td></tr>
+            <tr><td>Statistics</td><td>1</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- SQL CODE: Distribution by day -->
+      <div id="sql-day" style="display:none;">
+        <pre><code class="language-sql">
+          SELECT 
+            CASE day
+              WHEN 1 THEN 'Monday'
+              WHEN 2 THEN 'Tuesday'
+              WHEN 3 THEN 'Wednesday'
+              WHEN 4 THEN 'Thursday'
+              WHEN 5 THEN 'Friday'
+            END AS weekday,
+            COUNT(*) AS numberOfCourses
+          FROM weeklySchedule
+          GROUP BY day
+          ORDER BY day;
+        </code></pre>
+
+        <table border="1" cellspacing="0" cellpadding="8" style="border-collapse: collapse; width: 60%; text-align: center; margin: 0 auto;">
+          <thead style="background-color: #e8f5e9;">
+            <tr>
+              <th>weekday</th>
+              <th>numberOfCourses</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Monday</td><td>2</td></tr>
+            <tr><td>Tuesday</td><td>1</td></tr>
+            <tr><td>Wednesday</td><td>1</td></tr>
+            <tr><td>Thursday</td><td>1</td></tr>
+            <tr><td>Friday</td><td>2</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- JavaScript for switching between distributions -->
+      <script>
+        const select = document.getElementById('distributionSelect');
+        const sqlCourse = document.getElementById('sql-courseName');
+        const sqlDay = document.getElementById('sql-day');
     
--->
+        select.addEventListener('change', function() {
+          if (this.value === 'courseName') {
+            sqlCourse.style.display = 'block';
+            sqlDay.style.display = 'none';
+          } else {
+            sqlCourse.style.display = 'none';
+            sqlDay.style.display = 'block';
+          }
+        });
+      </script>
     </section>
 
     <section>
