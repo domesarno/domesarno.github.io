@@ -161,10 +161,18 @@
     
     #countTable {
       border-collapse: collapse;
-      width: 80%;
-      margin: 20px auto;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: 50%; /* ridotta */
+      margin: 10px auto;
+      font-size: 0.9em; /* testo più compatto */
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
     }
+    
+    /*
+    #countTable th, #countTable td {
+          padding: 6px 10px;
+        }
+    */
+    
     #countTable th {
       background-color: #e3f2fd;
       padding: 10px;
@@ -413,7 +421,7 @@
         </select>
       </div>
     
-      <canvas id="freqChart" width="600" height="300" style="margin:auto; display:block;"></canvas>
+      <canvas id="freqChart" width="900" height="450" style="margin:30px auto; display:block; max-width:90%;"></canvas>
     
       <h4 style="margin-top:30px;">Letter Counts</h4>
       <table id="countTable">
