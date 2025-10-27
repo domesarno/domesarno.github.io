@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,22 +8,22 @@
 
   <title>Homework 2 - Dataset and Distribution</title>
 
-  <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/sql.min.js"></script>
   <script>hljs.highlightAll();</script>
-  
+
   <style>
     body {
       margin: 0;
       font-family: 'Open Sans', Calibri, sans-serif;
       background: linear-gradient(135deg, #e9efff, #f9fbff);
-      color: #000; 
+      color: #000;
     }
 
-    h2, h3 {
-      color: #1a237e; 
+    h2,
+    h3 {
+      color: #1a237e;
     }
 
     header {
@@ -31,14 +32,14 @@
       text-align: center;
       padding: 80px 20px 60px 20px;
     }
-    
+
     header h1 {
       font-size: 2.8em;
       font-weight: 700;
       margin-bottom: 10px;
       color: #ffffff;
     }
-    
+
     header p {
       font-size: 1.2em;
       color: #e0e0e0;
@@ -47,12 +48,12 @@
 
 
     main {
-      max-width: 1100px; 
+      max-width: 1100px;
       margin: 40px auto;
       background: white;
       border-radius: 12px;
       padding: 50px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 
     section {
@@ -65,7 +66,10 @@
       font-size: 1.4em;
     }
 
-    #cipher, #decrypt { text-align: left; }
+    #cipher,
+    #decrypt {
+      text-align: left;
+    }
 
     #cipher textarea,
     #decrypt textarea,
@@ -95,7 +99,8 @@
       word-wrap: break-word;
     }
 
-    #cipher h3, #decrypt h3 {
+    #cipher h3,
+    #decrypt h3 {
       color: #1a237e;
       margin-bottom: 10px;
       font-weight: 600;
@@ -115,7 +120,7 @@
       margin: 20px auto;
       max-width: 900px;
     }
-    
+
     .letterTable {
       border-collapse: collapse;
       width: 340px;
@@ -126,19 +131,19 @@
       overflow: hidden;
       border: 1px solid #ccc;
     }
-    
+
     .letterTable th {
       background-color: #e3f2fd;
       color: #1a237e;
       font-weight: bold;
       padding: 8px;
     }
-    
+
     .letterTable td {
       border: 1px solid #ccc;
       padding: 6px;
     }
-    
+
     .letterTable tr:nth-child(even) {
       background-color: #f9fbff;
     }
@@ -150,46 +155,59 @@
       margin: 25px auto;
       display: block;
     }
-    
+
     section ul {
       list-style-type: disc;
       padding-left: 25px;
     }
-    
+
     section ul li {
       margin: 8px 0;
       font-size: 1em;
     }
-    
+
     section ul li a {
       color: #1a73e8;
       text-decoration: none;
       transition: color 0.2s;
     }
-    
+
     section ul li a:hover {
       text-decoration: underline;
     }
-    
+
     section ul li a:visited {
       color: #1a73e8;
     }
+
     a.back {
       display: inline-block;
       margin-top: 25px;
       text-decoration: none;
-      color: #000000;             /* nero */
+      color: #000000;
+      /* nero */
       font-weight: 500;
       transition: color 0.2s;
     }
-    
+
     a.back:hover {
       text-decoration: underline;
-      color: #000000;             /* resta nero anche quando ci passi sopra */
+      color: #000000;
+      /* resta nero anche quando ci passi sopra */
     }
-    
+
     a.back:visited {
-      color: #000000;             /* resta nero anche dopo il click */
+      color: #000000;
+      /* resta nero anche dopo il click */
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #555;
+      font-size: 0.9em;
+      border-top: 1px solid #ccc;
+      margin-top: 40px;
     }
   </style>
 </head>
@@ -201,30 +219,35 @@
   </header>
 
   <main>
-<!-- ======================
+    <!-- ======================
          SECTION 1 - Concept of Dataset and Distribution
          ====================== -->
     <section>
       <h2>Concept of Dataset and Distribution</h2>
       <p>
-        A <strong>dataset</strong> is a structured collection of data, usually arranged in rows and columns. 
-        Each <em>row</em> represents an observation or record, and each <em>column</em> represents a variable or attribute. 
-        The values inside a dataset can be numerical (for example, age or score) or categorical (for example, course name or type). 
-        Datasets can be stored in different formats, such as tables, spreadsheets, or databases, and are the foundation for any data analysis process.
+        A <strong>dataset</strong> is a structured collection of data, usually arranged in rows and columns.
+        Each <em>row</em> represents an observation or record, and each <em>column</em> represents a variable or
+        attribute.
+        The values inside a dataset can be numerical (for example, age or score) or categorical (for example, course
+        name or type).
+        Datasets can be stored in different formats, such as tables, spreadsheets, or databases, and are the foundation
+        for any data analysis process.
       </p>
-      
+
       <p>
-        In statistics, a <strong>distribution</strong> describes how the values of a variable are spread across possible outcomes. 
-        It shows the frequency or probability of each value occurring in the dataset. 
-        Distributions can be <em>discrete</em> (where values are separate and countable, like days of the week) 
+        In statistics, a <strong>distribution</strong> describes how the values of a variable are spread across possible
+        outcomes.
+        It shows the frequency or probability of each value occurring in the dataset.
+        Distributions can be <em>discrete</em> (where values are separate and countable, like days of the week)
         or <em>continuous</em> (where values can vary over a continuous range, like temperature or time).
       </p>
-      
+
       <p>
-        A <strong>univariate distribution</strong> focuses on a single variable, analyzing how often each value appears. 
-        It provides insights into the variability and concentration of data for that variable only, 
-        without considering relationships with other variables. 
-        For example, if a dataset contains a variable called <em>day</em> that can take values from 1 to 5 (representing Monday to Friday), 
+        A <strong>univariate distribution</strong> focuses on a single variable, analyzing how often each value appears.
+        It provides insights into the variability and concentration of data for that variable only,
+        without considering relationships with other variables.
+        For example, if a dataset contains a variable called <em>day</em> that can take values from 1 to 5 (representing
+        Monday to Friday),
         the univariate distribution of <em>day</em> tells us how many records correspond to each day.
       </p>
     </section>
@@ -234,11 +257,13 @@
          ======================================================-->
     <section id="dataset">
       <h2>Practical Implementation: Dataset Creation</h2>
-    
+
       <p>
-        The following SQL code was used to create the dataset <em>weeklySchedule</em>. 
-        The table contains three variables (k = 3): <strong>idCourse</strong>, <strong>courseName</strong>, and <strong>day</strong>. 
-        Each record represents a course and the corresponding day of the week it takes place, where days are coded from 1 (Monday) to 5 (Friday).
+        The following SQL code was used to create the dataset <em>weeklySchedule</em>.
+        The table contains three variables (k = 3): <strong>idCourse</strong>, <strong>courseName</strong>, and
+        <strong>day</strong>.
+        Each record represents a course and the corresponding day of the week it takes place, where days are coded from
+        1 (Monday) to 5 (Friday).
       </p>
 
       <pre><code class="language-sql">
@@ -259,7 +284,8 @@
       </code></pre>
 
       <h2>Full Dataset</h2>
-      <table border="1" cellspacing="0" cellpadding="8" style="border-collapse: collapse; width: 70%; text-align: center; margin: 20px auto;">
+      <table border="1" cellspacing="0" cellpadding="8"
+        style="border-collapse: collapse; width: 70%; text-align: center; margin: 20px auto;">
         <thead style="background-color: #e3f2fd;">
           <tr>
             <th>idCourse</th>
@@ -268,13 +294,41 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td>1027171</td><td>Network Infrastructures</td><td>1</td></tr>
-          <tr><td>1022807</td><td>Distributed Systems</td><td>1</td></tr>
-          <tr><td>1047622</td><td>Cryptography</td><td>2</td></tr>
-          <tr><td>1022807</td><td>Distributed Systems</td><td>3</td></tr>
-          <tr><td>1055043</td><td>Statistics</td><td>4</td></tr>
-          <tr><td>1047622</td><td>Cryptography</td><td>5</td></tr>
-          <tr><td>1027171</td><td>Network Infrastructures</td><td>5</td></tr>
+          <tr>
+            <td>1027171</td>
+            <td>Network Infrastructures</td>
+            <td>1</td>
+          </tr>
+          <tr>
+            <td>1022807</td>
+            <td>Distributed Systems</td>
+            <td>1</td>
+          </tr>
+          <tr>
+            <td>1047622</td>
+            <td>Cryptography</td>
+            <td>2</td>
+          </tr>
+          <tr>
+            <td>1022807</td>
+            <td>Distributed Systems</td>
+            <td>3</td>
+          </tr>
+          <tr>
+            <td>1055043</td>
+            <td>Statistics</td>
+            <td>4</td>
+          </tr>
+          <tr>
+            <td>1047622</td>
+            <td>Cryptography</td>
+            <td>5</td>
+          </tr>
+          <tr>
+            <td>1027171</td>
+            <td>Network Infrastructures</td>
+            <td>5</td>
+          </tr>
         </tbody>
       </table>
     </section>
@@ -284,7 +338,7 @@
      ====================== -->
     <section id="distribution">
       <h2>Univariate Distribution</h2>
-    
+
       <p>
         This section analyzes the dataset using two different univariate distributions:
         one based on <strong>courseName</strong> (how many times each course appears),
@@ -309,7 +363,8 @@
           ORDER BY occurrences DESC;
         </code></pre>
 
-        <table border="1" cellspacing="0" cellpadding="8" style="border-collapse: collapse; width: 70%; text-align: center; margin: 0 auto;">
+        <table border="1" cellspacing="0" cellpadding="8"
+          style="border-collapse: collapse; width: 70%; text-align: center; margin: 0 auto;">
           <thead style="background-color: #e3f2fd;">
             <tr>
               <th>courseName</th>
@@ -317,10 +372,22 @@
             </tr>
           </thead>
           <tbody>
-            <tr><td>Network Infrastructures</td><td>2</td></tr>
-            <tr><td>Distributed Systems</td><td>2</td></tr>
-            <tr><td>Cryptography</td><td>2</td></tr>
-            <tr><td>Statistics</td><td>1</td></tr>
+            <tr>
+              <td>Network Infrastructures</td>
+              <td>2</td>
+            </tr>
+            <tr>
+              <td>Distributed Systems</td>
+              <td>2</td>
+            </tr>
+            <tr>
+              <td>Cryptography</td>
+              <td>2</td>
+            </tr>
+            <tr>
+              <td>Statistics</td>
+              <td>1</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -342,7 +409,8 @@
           ORDER BY day;
         </code></pre>
 
-        <table border="1" cellspacing="0" cellpadding="8" style="border-collapse: collapse; width: 60%; text-align: center; margin: 0 auto;">
+        <table border="1" cellspacing="0" cellpadding="8"
+          style="border-collapse: collapse; width: 60%; text-align: center; margin: 0 auto;">
           <thead style="background-color: #e3f2fd;">
             <tr>
               <th>weekday</th>
@@ -350,11 +418,26 @@
             </tr>
           </thead>
           <tbody>
-            <tr><td>Monday</td><td>2</td></tr>
-            <tr><td>Tuesday</td><td>1</td></tr>
-            <tr><td>Wednesday</td><td>1</td></tr>
-            <tr><td>Thursday</td><td>1</td></tr>
-            <tr><td>Friday</td><td>2</td></tr>
+            <tr>
+              <td>Monday</td>
+              <td>2</td>
+            </tr>
+            <tr>
+              <td>Tuesday</td>
+              <td>1</td>
+            </tr>
+            <tr>
+              <td>Wednesday</td>
+              <td>1</td>
+            </tr>
+            <tr>
+              <td>Thursday</td>
+              <td>1</td>
+            </tr>
+            <tr>
+              <td>Friday</td>
+              <td>2</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -364,8 +447,8 @@
         const select = document.getElementById('distributionSelect');
         const sqlCourse = document.getElementById('sql-courseName');
         const sqlDay = document.getElementById('sql-day');
-    
-        select.addEventListener('change', function() {
+
+        select.addEventListener('change', function () {
           if (this.value === 'courseName') {
             sqlCourse.style.display = 'block';
             sqlDay.style.display = 'none';
@@ -376,11 +459,11 @@
         });
       </script>
     </section>
-    
+
     <section id="cipher">
       <h2>Interactive Caesar Cipher</h2>
       <p>
-        Type your text below and choose a shift (1–25) to encrypt or decrypt it.  
+        Type your text below and choose a shift (1–25) to encrypt or decrypt it.
         You can visualize the <strong>letter frequency distribution</strong> before and after encryption.
       </p>
 
@@ -391,7 +474,8 @@
         <label for="shiftValue"><strong>Shift (1–25):</strong></label>
         <input type="number" id="shiftValue" min="1" max="25" value="3" style="width:60px; text-align:center;">
 
-        <button id="encryptBtn" style="padding:6px 12px; background:#1a73e8; color:white; border:none; border-radius:6px; cursor:pointer;">
+        <button id="encryptBtn"
+          style="padding:6px 12px; background:#1a73e8; color:white; border:none; border-radius:6px; cursor:pointer;">
           Encrypt
         </button>
       </div>
@@ -428,7 +512,7 @@
           </thead>
           <tbody></tbody>
         </table>
-      
+
         <table class="letterTable" id="countTableRight">
           <thead>
             <tr>
@@ -447,8 +531,9 @@
     <section id="decrypt" style="margin-top:60px;">
       <h2>Caesar Cipher Decryption</h2>
       <p>
-        In this section, you can decrypt an encrypted message using a manual or automatic approach.  
-        Choose a shift value or let the system detect it automatically through <em>English letter frequency analysis</em>.
+        In this section, you can decrypt an encrypted message using a manual or automatic approach.
+        Choose a shift value or let the system detect it automatically through <em>English letter frequency
+          analysis</em>.
       </p>
 
       <div style="text-align:center; margin:30px 0;">
@@ -458,11 +543,13 @@
         <label for="decryptShift"><strong>Shift (1–25):</strong></label>
         <input type="number" id="decryptShift" min="1" max="25" value="3" style="width:60px; text-align:center;">
 
-        <button id="manualDecryptBtn" style="padding:6px 12px; background:#f57c00; color:white; border:none; border-radius:6px; cursor:pointer;">
+        <button id="manualDecryptBtn"
+          style="padding:6px 12px; background:#f57c00; color:white; border:none; border-radius:6px; cursor:pointer;">
           Manual Decrypt
         </button>
 
-        <button id="autoDecryptBtn" style="padding:6px 12px; background:#43a047; color:white; border:none; border-radius:6px; cursor:pointer; margin-left:8px;">
+        <button id="autoDecryptBtn"
+          style="padding:6px 12px; background:#43a047; color:white; border:none; border-radius:6px; cursor:pointer; margin-left:8px;">
           Auto Detect
         </button>
       </div>
@@ -476,9 +563,9 @@
     <section id="conclusions" style="margin-top:60px;">
       <h2>Conclusions</h2>
       <p>
-        Through this assignment, we explored the concept of datasets and univariate distributions, 
-        understanding how data can be organized and analyzed using both SQL and visualization techniques.  
-        The practical implementation with the Caesar cipher provided a hands-on example of how statistical 
+        Through this assignment, we explored the concept of datasets and univariate distributions,
+        understanding how data can be organized and analyzed using both SQL and visualization techniques.
+        The practical implementation with the Caesar cipher provided a hands-on example of how statistical
         tools, such as frequency distributions, can be applied to cryptographic analysis.
       </p>
     </section>
@@ -488,15 +575,17 @@
       <h2>Sources</h2>
       <ul>
         <li><a href="https://en.wikipedia.org/wiki/Data_set" target="_blank">Wikipedia – Dataset</a></li>
-        <li><a href="https://en.wikipedia.org/wiki/Univariate_distribution/" target="_blank">Wikipedia – Univariate Distribution</a></li>
-        <li><a href="https://www.geeksforgeeks.org/what-is-dataset/" target="_blank">GeeksforGeeks – What is a Dataset</a></li>
+        <li><a href="https://en.wikipedia.org/wiki/Univariate_distribution/" target="_blank">Wikipedia – Univariate
+            Distribution</a></li>
+        <li><a href="https://www.geeksforgeeks.org/what-is-dataset/" target="_blank">GeeksforGeeks – What is a
+            Dataset</a></li>
       </ul>
     </section>
 
     <a href="../../index.html" class="back">← Back to Home</a>
   </main>
   <footer>
-    <p>© 2025 - Domenico Sarno | Homework 2 - 15th October</p>
+    <p>© 2025 - Domenico Sarno | Homework 2 - 15th Oct</p>
   </footer>
 
   <!-- ================================
@@ -504,8 +593,8 @@
        ================================ -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      function caesarShift(text, shift, decrypt=false) {
+    document.addEventListener("DOMContentLoaded", function () {
+      function caesarShift(text, shift, decrypt = false) {
         const lower = 'abcdefghijklmnopqrstuvwxyz';
         const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         let result = '';
@@ -560,21 +649,21 @@
         const freqAfter = letterFrequencyPercent(afterText);
         const countBefore = letterFrequencyCount(beforeText);
         const countAfter = letterFrequencyCount(afterText);
-      
+
         const beforePerc = letters.map(l => freqBefore[l]);
         const afterPerc = letters.map(l => freqAfter[l]);
-      
+
         // Aggiorna il grafico
         freqChart.data.datasets[0].data = (viewMode === 'after') ? [] : beforePerc;
         freqChart.data.datasets[1].data = (viewMode === 'before') ? [] : afterPerc;
         freqChart.update();
-      
+
         // Riempie le due tabelle (A–L e M–Z)
         const tbodyLeft = document.querySelector("#countTableLeft tbody");
         const tbodyRight = document.querySelector("#countTableRight tbody");
         tbodyLeft.innerHTML = "";
         tbodyRight.innerHTML = "";
-      
+
         letters.forEach((l, idx) => {
           const row = `<tr>
             <td>${l}</td>
@@ -614,9 +703,11 @@
         document.getElementById('decryptOutput').innerText = decrypted;
       });
 
-      const englishFreq = { E: 12.7, T: 9.06, A: 8.17, O: 7.51, I: 6.97, N: 6.75, S: 6.33,
+      const englishFreq = {
+        E: 12.7, T: 9.06, A: 8.17, O: 7.51, I: 6.97, N: 6.75, S: 6.33,
         H: 6.09, R: 5.99, D: 4.25, L: 4.03, C: 2.78, U: 2.76, M: 2.41, W: 2.36, F: 2.23,
-        G: 2.02, Y: 1.97, P: 1.93, B: 1.49, V: 0.98, K: 0.77, J: 0.15, X: 0.15, Q: 0.10, Z: 0.07 };
+        G: 2.02, Y: 1.97, P: 1.93, B: 1.49, V: 0.98, K: 0.77, J: 0.15, X: 0.15, Q: 0.10, Z: 0.07
+      };
 
       function detectShift(text) {
         let bestShift = 0, bestScore = Infinity;
@@ -640,4 +731,5 @@
     });
   </script>
 </body>
+
 </html>

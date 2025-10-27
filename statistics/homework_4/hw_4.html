@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <title>Homework 4 - Law of Large Numbers</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Open Sans', Calibri, sans-serif;
+            background: linear-gradient(135deg, #e9efff, #f9fbff);
+            color: #000;
+        }
+
+        header {
+            background: linear-gradient(90deg, #3a3a3a, #1f1f1f);
+            color: #ffffff;
+            text-align: center;
+            padding: 80px 20px 60px 20px;
+        }
+
+        header h1 {
+            font-size: 2.8em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2em;
+            color: #e0e0e0;
+            margin-top: 0;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 12px;
+            padding: 50px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            border-left: 5px solid #1a73e8;
+            padding-left: 10px;
+            font-size: 1.4em;
+            color: #1a237e;
+        }
+
+        .slider-box {
+            background: #f0f4ff;
+            padding: 15px 25px;
+            border-radius: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        label {
+            font-weight: bold;
+            font-size: 0.95em;
+        }
+
+        input[type=range] {
+            width: 150px;
+        }
+
+        #n_slider {
+            accent-color: #00449d;
+            /* blu */
+        }
+
+        #m_slider {
+            accent-color: #9e0300;
+            /* rosso */
+        }
+
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            cursor: pointer;
+            background: #2e7d32;
+            transition: background 0.3s;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            background: #1b5e20;
+        }
+
+        #llnChart,
+        #histChart {
+            width: 95% !important;
+            max-width: 900px;
+            height: 450px !important;
+            margin: 25px auto;
+            display: block;
+        }
+
+        a.back {
+            display: inline-block;
+            margin-top: 25px;
+            text-decoration: none;
+            color: #000000;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        a.back:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #555;
+            font-size: 0.9em;
+            border-top: 1px solid #ccc;
+            margin-top: 40px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+    <header>
+        <h1>Homework 4</h1>
+        <p>Law of Large Numbers Simulation</p>
+    </header>
+
+    <main>
+        <section>
+            <h2>Concept of the Law of Large Numbers</h2>
+            <p>
+                Mathematically, the Law of Large Numbers can be expressed as:
+            </p>
+
+            <div style="text-align:center; background:#f5f7ff; border-radius:8px; padding:10px; margin:15px 0;">
+                <em>
+                    \[
+                    \lim_{n \to \infty} \frac{1}{n} \sum_{i=1}^{n} X_i = \mathbb{E}[X]
+                    \]
+                </em>
+            </div>
+
+            <p>
+                where \( X_i \) are independent and identically distributed random variables with finite expectation
+                \( \mathbb{E}[X] \). In our simulation, each \( X_i \) represents a Bernoulli trial with probability
+                \( p = 0.5 \).
+            </p>
+
+            <p>
+                The <strong>Law of Large Numbers (LLN)</strong> is a fundamental theorem in probability stating that,
+                as the number of independent trials of a random experiment increases, the <em>relative frequency</em>
+                of an event tends to converge to its true probability of occurrence. <br><br>
+                In this simulation, each trajectory represents a sequence of Bernoulli trials (success or failure)
+                with a probability <em>p = 0.5</em>. As the number of trials grows, the average outcome of each
+                trajectory approaches the expected probability, visually demonstrating the LLN principle.
+            </p>
+        </section>
+
+        <section>
+            <h2>Interactive Simulation</h2>
+
+            <div class="slider-box">
+                <label>Trials n: <span id="n_val">1000</span></label>
+                <input type="range" id="n_slider" min="100" max="5000" step="100" value="1000">
+
+                <label>Trajectories m: <span id="m_val">30</span></label>
+                <input type="range" id="m_slider" min="10" max="100" step="5" value="30">
+
+            </div>
+
+            <div class="graphs">
+                <div id="llnChart"></div>
+                <div id="histChart"></div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Conclusions</h2>
+            <p>
+                As illustrated, while the relative frequencies of individual trajectories initially fluctuate,
+                they steadily converge towards <em>p = 0.5</em> as the number of trials increases. <br><br>
+                This behavior confirms the <strong>Law of Large Numbers</strong>: randomness dominates in the short run,
+                but regularity emerges in the long run. The second graph reinforces this, showing how the final
+                relative frequencies become increasingly concentrated around the true probability value.
+            </p>
+        </section>
+
+        <section>
+            <h2>Sources</h2>
+            <ul style="list-style-type: disc; padding-left: 25px;">
+                <li>
+                    <a href="https://en.wikipedia.org/wiki/Law_of_large_numbers" target="_blank"
+                        title="Open Wikipedia page on the Law of Large Numbers" class="source-link">
+                        Wikipedia – <em>Law of Large Numbers</em>
+                    </a>
+                </li>
+            </ul>
+        </section>
+
+        <style>
+            /* --- Link style for Sources --- */
+            .source-link {
+                color: #1a0dab;
+                font-weight: 500;
+                text-decoration: none;
+                transition: color 0.2s;
+            }
+
+            .source-link:hover {
+                text-decoration: underline;
+                color: #1a0dab;
+            }
+
+            .source-link:visited {
+                color: #1a0dab;
+            }
+        </style>
+
+
+
+        <a href="#" class="back">&larr; Back Home</a>
+    </main>
+
+    <footer>
+        © 2025 - Domenico Sarno | 29th Oct
+    </footer>
+
+    <script>
+        function simulateLLN(p, n, m) {
+            const data = [];
+            for (let i = 0; i < m; i++) {
+                const trials = Array.from({ length: n }, () => Math.random() < p ? 1 : 0);
+                let sum = 0;
+                const freq = [];
+                for (let j = 0; j < n; j++) {
+                    sum += trials[j];
+                    freq.push(sum / (j + 1));
+                }
+                data.push(freq);
+            }
+            return data;
+        }
+
+
+        function plotLLN(p, n, m) {
+            const trajectories = simulateLLN(p, n, m);
+
+            // --- Trajectories chart ---
+            const traces = trajectories.map((f, i) => {
+                const highlight = (i % Math.ceil(m / 10) === 0);
+                const opacity = highlight ? 0.9 : 0.1;
+                const width = highlight ? 2 : 1;
+                return {
+                    y: f,
+                    mode: 'lines',
+                    line: { color: `rgba(66,133,244,1)`, width: width },
+                    opacity: opacity,
+                    hoverinfo: 'none',
+                    showlegend: false
+                };
+            });
+
+            const layout1 = {
+                title: "Relative frequency f(n) across trajectories",
+                xaxis: {
+                    title: "Number of trials (n)",
+                    range: [0, n],
+                    showline: true,
+                    linecolor: "#000",
+                    linewidth: 1,
+                    ticks: "outside"
+                },
+                yaxis: {
+                    title: "f(n)",
+                    range: [0, 1],
+                    showline: true,
+                    linecolor: "#000",
+                    linewidth: 1,
+                    ticks: "outside"
+                },
+
+                shapes: [{
+                    type: "line",
+                    x0: 0, x1: n,
+                    y0: p, y1: p,
+                    line: { color: "red", width: 1, dash: "solid" }
+                }],
+                margin: { t: 50, l: 60, r: 30, b: 50 },
+                showlegend: false
+            };
+
+            Plotly.newPlot("llnChart", traces, layout1,
+                { displayModeBar: false, responsive: true, staticPlot: true });
+
+            // --- Smoothed Histogram (KDE-like visual) ---
+            const finals = trajectories.map(t => t[t.length - 1]);
+
+            const histData = [{
+                x: finals,
+                type: "histogram",
+                histnorm: "probability density",
+                marker: {
+                    color: "rgba(66,133,244,0.5)",
+                    line: { color: "#1a237e", width: 1 }
+                },
+                opacity: 0.6,
+                nbinsx: 25
+            }];
+
+            const layout2 = {
+                title: "Final relative frequency distribution",
+                xaxis: {
+                    title: "f(n)",
+                    range: [0, 1],
+                    showline: true,
+                    linecolor: "#000",
+                    linewidth: 1,
+                    ticks: "outside"
+                },
+                yaxis: {
+                    title: "Density",
+                    showline: true,
+                    linecolor: "#000",
+                    linewidth: 1,
+                    ticks: "outside"
+                },
+                margin: { t: 50, l: 60, r: 30, b: 50 },
+                showlegend: false
+            };
+
+            // Combine histogram and density curve
+            Plotly.newPlot("histChart", [histData[0]], layout2,
+                { displayModeBar: false, responsive: true, staticPlot: true });
+
+        }
+
+
+
+        function updateValues() {
+            const n = parseInt(document.getElementById("n_slider").value);
+            const m = parseInt(document.getElementById("m_slider").value);
+            const p = 0.5;
+            document.getElementById("n_val").innerText = n;
+            document.getElementById("m_val").innerText = m;
+            return { p, n, m };
+        }
+
+        const { p, n, m } = updateValues();
+        plotLLN(p, n, m);
+
+        document.querySelectorAll("input[type=range]").forEach(slider => {
+            slider.addEventListener("input", () => {
+                const { p, n, m } = updateValues();
+                plotLLN(p, n, m);
+            });
+        });
+    </script>
+</body>
+
+</html>
