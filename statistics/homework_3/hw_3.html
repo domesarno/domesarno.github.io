@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+
+  <title>Homework 3 - RSA Encryption and Frequency Analysis</title>
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Open Sans', Calibri, sans-serif;
+      background: linear-gradient(135deg, #e9efff, #f9fbff);
+      color: #000;
+    }
+
+    h2, h3 {
+      color: #1a237e;
+    }
+
+    header {
+      background: linear-gradient(90deg, #3a3a3a, #1f1f1f);
+      color: #ffffff;
+      text-align: center;
+      padding: 80px 20px 60px 20px;
+    }
+
+    header h1 {
+      font-size: 2.8em;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #ffffff;
+    }
+
+    header p {
+      font-size: 1.2em;
+      color: #e0e0e0;
+      margin-top: 0;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 40px auto;
+      background: white;
+      border-radius: 12px;
+      padding: 50px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    section {
+      margin-bottom: 50px;
+    }
+
+    section h2 {
+      border-left: 5px solid #1a73e8;
+      padding-left: 10px;
+      font-size: 1.4em;
+    }
+
+    textarea {
+      width: 90%;
+      max-width: 700px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: #f0f4ff;
+      color: #000;
+      font-size: 1em;
+      padding: 12px;
+      line-height: 1.5;
+      text-align: left;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    button {
+      padding: 6px 12px;
+      margin: 5px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+    }
+
+    #encryptBtn { background: #1a73e8; }
+    #decryptBtn { background: #f57c00; }
+    #analyzeBtn { background: #43a047; }
+    #generateBtn { background: #6a1b9a; }
+
+    .output-box {
+      width: 90%;
+      max-width: 700px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: #f0f4ff;
+      padding: 12px;
+      margin: 10px auto;
+      text-align: left;
+      min-height: 40px;
+      white-space: pre-wrap;
+    }
+
+    #freqChart {
+      width: 95% !important;
+      max-width: 900px;
+      height: 420px !important;
+      margin: 25px auto;
+      display: block;
+    }
+
+    a.back {
+      display: inline-block;
+      margin-top: 25px;
+      text-decoration: none;
+      color: #000000;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    a.back:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Homework 3</h1>
+    <p>RSA Encryption and Frequency Analysis</p>
+  </header>
+
+  <main>
+
+    <!-- ======================
+         SECTION 1 - Theoretical Introduction
+         ====================== -->
+    <section>
+      <h2>Concept of RSA Encryption and Frequency Analysis</h2>
+
+      <p>
+        <strong>RSA</strong> is one of the most well-known public-key cryptographic systems. It is based on the 
+        mathematical difficulty of factoring large numbers. RSA uses two prime numbers (<em>p</em> and <em>q</em>) 
+        to generate a public and a private key pair.
+      </p>
+
+      <p>
+        The algorithm works as follows:
+        <ul>
+          <li>Choose two small prime numbers: <em>p</em> and <em>q</em>.</li>
+          <li>Compute <em>n = p × q</em>.</li>
+          <li>Compute Euler’s totient: <em>φ(n) = (p − 1)(q − 1)</em>.</li>
+          <li>Choose <em>e</em> (public exponent) such that it is coprime with <em>φ(n)</em>.</li>
+          <li>Compute <em>d</em> (private exponent) so that <em>d × e ≡ 1 (mod φ(n))</em>.</li>
+        </ul>
+      </p>
+
+      <p>
+        To encrypt each letter (converted into a number <em>M</em>), we compute <em>C = M<sup>e</sup> mod n</em>.
+        To decrypt, we compute <em>M = C<sup>d</sup> mod n</em>.
+      </p>
+
+      <p>
+        <strong>Frequency analysis</strong> studies the distribution of letters in a text. It can often be used 
+        to break simple ciphers like the Caesar cipher. However, RSA encrypts each message numerically, which 
+        makes direct frequency comparison less useful — still, analyzing distributions helps us understand 
+        how patterns disappear after encryption.
+      </p>
+    </section>
+
+    <!-- ======================
+         SECTION 2 - Practical Implementation
+         ====================== -->
+    <section id="rsa">
+      <h2>Practical Implementation of RSA Encryption</h2>
+      <p>
+        Below is a simple interactive demonstration of the RSA algorithm using small primes.  
+        You can encrypt and decrypt a message, analyze its letter frequency distribution,  
+        and even generate new prime numbers for experimentation.
+      </p>
+
+      <div style="text-align:center;">
+        <label><strong>Enter your plaintext (A–Z only):</strong></label><br>
+        <textarea id="plaintext" placeholder="Type your message here..."></textarea><br>
+
+        <button id="encryptBtn">Encrypt</button>
+        <button id="decryptBtn">Decrypt</button>
+        <button id="generateBtn">Generate new keys</button>
+      </div>
+
+      <div style="text-align:center; margin-top:25px;">
+        <h3>Encryption Parameters</h3>
+        <div id="paramsBox" class="output-box"></div>
+
+        <h3>Encrypted Message</h3>
+        <div id="encryptedOutput" class="output-box"></div>
+
+        <h3>Decrypted Message</h3>
+        <div id="decryptedOutput" class="output-box"></div>
+      </div>
+
+      <h3 style="margin-top:40px;">Letter Frequency Distribution</h3>
+      <div style="text-align:center; margin-bottom:15px;">
+        <button id="showEncryptedFreq" style="background:#19a00c;">Encrypted Frequency</button>
+        <button id="showDecryptedFreq" style="background:#980000;">Decrypted Frequency</button>
+      </div>
+      
+      <canvas id="freqChart"></canvas>
+    </section>
+
+    <!-- ======================
+         SECTION 3 - Conclusions
+         ====================== -->
+    <section id="conclusions">
+      <h2>Conclusions</h2>
+      <p>
+        Through this homework, we explored the fundamental concepts behind RSA encryption, 
+        understanding how public and private keys are generated from two prime numbers.  
+        The experiment shows how encryption transforms readable text into numerical values, 
+        hiding its original structure and frequency distribution.
+      </p>
+
+      <p>
+        Frequency analysis remains an important tool in cryptography, especially for simpler ciphers.  
+        While RSA resists such analysis due to its mathematical nature, visualizing distributions 
+        helps us appreciate how data randomness increases through secure encryption.
+      </p>
+    </section>
+
+    <section>
+      <h2>Sources</h2>
+      <ul>
+        <li><a href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)" target="_blank">Wikipedia – RSA Cryptosystem</a></li>
+        <li><a href="https://en.wikipedia.org/wiki/Frequency_analysis" target="_blank">Wikipedia – Frequency Analysis</a></li>
+        <li><a href="https://www.geeksforgeeks.org/rsa-algorithm-cryptography/" target="_blank">GeeksforGeeks – RSA Algorithm</a></li>
+      </ul>
+    </section>
+
+    <a href="../../index.html" class="back">← Back to Home</a>
+  </main>
+
+  <footer>
+    <p>© 2025 - Domenico Sarno | Homework 3 - 27th October</p>
+  </footer>
+
+  <!-- ================================
+       SCRIPT - RSA Encryption + Chart
+       ================================ -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+
+    function formatDecryptedText(text, lineLength = 60) {
+        let formatted = "";
+        for (let i = 0; i < text.length; i += lineLength) {
+            formatted += text.slice(i, i + lineLength) + "\n";
+        }
+        return formatted.trim();
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+
+    // --- Step 1: Initialize RSA with known good starting values
+    let p = 61, q = 53;
+    let e = 17; // public exponent
+    let n, phi, d;
+
+    // Compute modular inverse of e mod phi
+    function modInverse(e, phi) {
+    for (let i = 1; i < phi; i++) {
+        if ((e * i) % phi === 1) return i;
+    }
+    return 1;
+    }
+
+    // Modular exponentiation (precise calculation)
+    function modPow(base, exp, mod) {
+    let result = 1;
+    base = base % mod;
+    while (exp > 0) {
+        if (exp % 2 === 1) result = (result * base) % mod;
+        base = (base * base) % mod;
+        exp = Math.floor(exp / 2);
+    }
+    return result;
+    }
+
+    // Compute n, phi, d
+    function computeKeys() {
+    n = p * q;
+    phi = (p - 1) * (q - 1);
+    d = modInverse(e, phi);
+    updateParams();
+    }
+
+    // Display RSA parameters
+    function updateParams() {
+    document.getElementById("paramsBox").innerText =
+        `p = ${p}, q = ${q}\nn = ${n}\nφ(n) = ${phi}\ne = ${e}\nd = ${d}`;
+    }
+
+    computeKeys();
+
+    // --- Step 2: RSA core functions (letter mapping)
+    function charToNum(ch) {
+    return ch.charCodeAt(0) - 65; // 'A'→0, 'B'→1, ..., 'Z'→25
+    }
+
+    function numToChar(num) {
+    if (num < 0 || num > 25) return "?";
+    return String.fromCharCode(num + 65);
+    }
+
+    // Encrypt each letter using modular exponentiation
+    function encryptRSA(text) {
+    text = text.toUpperCase().replace(/[^A-Z]/g, "");
+    const result = [];
+    for (let ch of text) {
+        const m = charToNum(ch);
+        const c = modPow(m, e, n);
+        result.push(c);
+    }
+    return result.join(" ");
+    }
+
+    // Decrypt each number using modular exponentiation
+    function decryptRSA(cipherText) {
+    const numbers = cipherText.trim().split(/\s+/).map(Number);
+    let result = "";
+    for (let c of numbers) {
+        const m = modPow(c, d, n);
+        result += numToChar(m);
+    }
+    return result;
+    }
+
+    // --- Step 3: Event handlers for buttons
+    const plaintextArea = document.getElementById("plaintext");
+    const encryptedDiv = document.getElementById("encryptedOutput");
+    const decryptedDiv = document.getElementById("decryptedOutput");
+
+    document.getElementById("encryptBtn").addEventListener("click", () => {
+    const text = plaintextArea.value;
+    if (!text.trim()) return alert("Please enter some plaintext first.");
+    const encrypted = encryptRSA(text);
+    encryptedDiv.innerText = encrypted;
+    });
+
+    document.getElementById("decryptBtn").addEventListener("click", () => {
+    const encrypted = encryptedDiv.innerText;
+    if (!encrypted.trim()) return alert("Encrypt a message first.");
+    const decrypted = decryptRSA(encrypted);
+    decryptedDiv.innerText = formatDecryptedText(decrypted);
+    });
+
+    // --- Step 4: Allow user to change p and q manually
+    const generateBtn = document.getElementById("generateBtn");
+    generateBtn.insertAdjacentHTML("afterend", `
+    <div style="margin-top:10px;">
+        <label>p:</label>
+        <input id="pValue" type="number" value="61" min="3" style="width:60px; text-align:center;">
+        <label>q:</label>
+        <input id="qValue" type="number" value="53" min="3" style="width:60px; text-align:center;">
+        <button id="updateBtn" style="background:#1a237e; color:white; border:none; border-radius:6px; padding:5px 10px; margin-left:8px;">Update Keys</button>
+    </div>
+    `);
+
+    // --- Step 4b: Generate random prime numbers for p and q automatically ---
+    generateBtn.addEventListener("click", () => {
+    // List of small but valid prime numbers
+    const smallPrimes = [3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199];
+
+    // Pick two distinct primes
+    p = smallPrimes[Math.floor(Math.random() * smallPrimes.length)];
+    do {
+        q = smallPrimes[Math.floor(Math.random() * smallPrimes.length)];
+    } while (q === p);
+
+    // Recompute RSA parameters
+    computeKeys();
+
+    // Update the visible input boxes to reflect new values
+    document.getElementById("pValue").value = p;
+    document.getElementById("qValue").value = q;
+
+    // Update displayed parameters on page
+    updateParams();
+    });
+
+    document.getElementById("updateBtn").addEventListener("click", () => {
+    const newP = parseInt(document.getElementById("pValue").value);
+    const newQ = parseInt(document.getElementById("qValue").value);
+    if (isNaN(newP) || isNaN(newQ) || newP === newQ) {
+        alert("Please enter valid distinct prime numbers for p and q.");
+        return;
+    }
+    p = newP;
+    q = newQ;
+    computeKeys();
+    });
+
+    // --- Step 5: Frequency chart remains unchanged
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+    // --- Frequency Analysis Section ---
+
+    const ctx = document.getElementById("freqChart").getContext("2d");
+
+    // Default (start with decrypted frequency)
+    let currentMode = "decrypted";
+
+    let freqChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+        labels: [],
+        datasets: [{
+        label: "Letter Frequency",
+        data: [],
+        backgroundColor: "rgba(66,133,244,0.6)",
+        borderColor: "#1a73e8",
+        borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+        x: { title: { display: true, text: "Symbols / Letters" } },
+        y: { beginAtZero: true, title: { display: true, text: "Count / Percentage" } }
+        },
+        plugins: { legend: { display: false } }
+    }
+    });
+
+    // Count how often each symbol appears in encrypted message
+    function encryptedSymbolFrequency(encryptedText) {
+    const freq = {};
+    const numbers = encryptedText.trim().split(/\s+/).map(Number);
+    for (let n of numbers) freq[n] = (freq[n] || 0) + 1;
+    return freq;
+    }
+
+    // Compute letter frequency in %
+    function letterFrequencyPercent(text) {
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const freq = {};
+    for (let l of alphabet) freq[l] = 0;
+    let total = 0;
+    for (let c of text.toUpperCase()) {
+        if (alphabet.includes(c)) { freq[c]++; total++; }
+    }
+    for (let l of alphabet) freq[l] = total ? (freq[l] / total * 100).toFixed(2) : 0;
+    return freq;
+    }
+
+    // Update chart depending on selected mode
+    function updateChart(mode) {
+    let labels = [];
+    let data = [];
+    
+    if (mode === "encrypted") {
+        const encrypted = document.getElementById("encryptedOutput").innerText;
+        if (!encrypted.trim()) return alert("Encrypt a message first.");
+        const freq = encryptedSymbolFrequency(encrypted);
+        labels = Object.keys(freq);
+        data = Object.values(freq);
+    } else {
+        const decrypted = document.getElementById("decryptedOutput").innerText;
+        if (!decrypted.trim()) return alert("Decrypt a message first.");
+        const freq = letterFrequencyPercent(decrypted);
+        labels = Object.keys(freq);
+        data = Object.values(freq);
+    }
+
+    freqChart.data.labels = labels;
+    freqChart.data.datasets[0].data = data;
+    freqChart.options.scales.y.title.text = mode === "encrypted" ? "Count" : "Percentage";
+    freqChart.options.scales.x.title.text = mode === "encrypted" ? "Cipher Symbols" : "Letters";
+    freqChart.update();
+    }
+
+    // Button handlers for switching chart mode
+    document.getElementById("showEncryptedFreq").addEventListener("click", () => {
+    currentMode = "encrypted";
+    updateChart("encrypted");
+    });
+
+    document.getElementById("showDecryptedFreq").addEventListener("click", () => {
+    currentMode = "decrypted";
+    updateChart("decrypted");
+    });
+
+    function letterFrequencyPercent(text) {
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const freq = {};
+    for (let l of alphabet) freq[l] = 0;
+    let total = 0;
+    for (let c of text.toUpperCase()) {
+        if (alphabet.includes(c)) { freq[c]++; total++; }
+    }
+    for (let l of alphabet) freq[l] = total ? (freq[l] / total * 100).toFixed(2) : 0;
+    return freq;
+    }
+    });
+  </script>
+</body>
+</html>
