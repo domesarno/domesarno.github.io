@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homework 5 – Research Task</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fc;
+            color: #222;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        /* Header section (dark grey bar) */
+        .header {
+            background-color: #2c2c2c;
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.3em;
+        }
+
+        .header h2 {
+            font-weight: 400;
+            font-size: 1.3em;
+            color: #ddd;
+        }
+
+        /* Content container */
+        .content {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 25px;
+        }
+
+        /* Blue bar titles */
+        h3 {
+            border-left: 5px solid #2b4d9a;
+            padding-left: 10px;
+            color: #1b3d8a;
+            margin-top: 40px;
+        }
+
+        /* Sources list */
+        ul {
+            list-style-type: disc;
+            margin-left: 30px;
+        }
+
+        a {
+            color: #1b3d8a;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Back Home link */
+        .back-home {
+            display: inline-block;
+            margin-top: 30px;
+            color: #000;
+            text-decoration: none;
+        }
+
+        .back-home:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            font-size: 0.9em;
+            color: #555;
+            margin-top: 50px;
+            padding: 15px 0 30px 0;
+            border-top: 1px solid #ccc;
+        }
+
+        code {
+            background-color: #eef;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Homework 5</h1>
+        <h2>Research Task – Measures of Location and Dispersion</h2>
+    </div>
+
+    <div class="content">
+        <h3>Introduction</h3>
+        <p>
+            In statistics, measures of <b>location</b> (or central tendency) and <b>dispersion</b> (or variability)
+            are fundamental to summarize and describe datasets.
+            Measures of location identify the "center" or typical value of a dataset,
+            while measures of dispersion describe how spread out the data are around that center.
+        </p>
+
+        <h3>Measures of Location (Central Tendency)</h3>
+        <p>
+            The most common measures of central tendency are:
+        </p>
+        <ul>
+            <li><b>Arithmetic Mean:</b> The sum of all observations divided by their number.
+                It is sensitive to extreme values (outliers).
+                Formula: <code>mean = (x₁ + x₂ + ... + xₙ) / n</code>
+            </li>
+            <li><b>Median:</b> The middle value of an ordered dataset.
+                It is more robust to outliers and skewed distributions.
+            </li>
+            <li><b>Mode:</b> The value that occurs most frequently in a dataset.
+                It is particularly useful for categorical or discrete data.
+            </li>
+        </ul>
+
+        <h3>Measures of Dispersion</h3>
+        <p>
+            Measures of dispersion describe the degree to which data values differ from the mean or median.
+            Common examples include:
+        </p>
+        <ul>
+            <li><b>Variance (σ²):</b> The average of the squared deviations from the mean.
+                Formula: <code>σ² = Σ(xᵢ − μ)² / n</code>
+            </li>
+            <li><b>Standard Deviation (σ):</b> The square root of the variance.
+                It expresses the average distance from the mean in the same units as the data.
+            </li>
+            <li><b>Interquartile Range (IQR):</b> The difference between the 75th and 25th percentiles (Q₃ − Q₁),
+                representing the range of the middle 50% of the data.
+            </li>
+        </ul>
+
+        <h3>Applications, Advantages, and Limitations</h3>
+        <p>
+            Measures of location and dispersion are widely used in descriptive and inferential statistics.
+            <b>Means</b> are used when data are symmetrically distributed,
+            while <b>medians</b> are preferred for skewed data or in the presence of outliers.
+            <b>Variance</b> and <b>standard deviation</b> provide information about the consistency or variability of
+            data,
+            useful in finance, manufacturing, and scientific experiments.
+        </p>
+        <p>
+            However, these measures have limitations:
+            the mean is influenced by outliers,
+            variance and standard deviation assume interval or ratio scales,
+            and the mode may be unstable when multiple peaks occur.
+        </p>
+
+        <h3>Sources</h3>
+        <ul>
+            <li><a href="https://en.wikipedia.org/wiki/Measures_of_central_tendency" target="_blank">Wikipedia –
+                    Measures of Central Tendency</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/Statistical_dispersion" target="_blank">Wikipedia – Statistical
+                    Dispersion</a></li>
+            <li><a href="https://www.statisticshowto.com/probability-and-statistics/descriptive-statistics/measures-of-dispersion/"
+                    target="_blank">Statistics How To – Measures of Dispersion</a></li>
+        </ul>
+
+        <a href="index.html" class="back-home">← Back Home</a>
+    </div>
+
+    <footer>
+        © 2025 - Domenico Sarno | Homework 4 - 5th Nov
+    </footer>
+</body>
+
+</html>
