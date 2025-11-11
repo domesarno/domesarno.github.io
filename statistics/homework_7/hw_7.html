@@ -431,14 +431,14 @@
             html += '<h3>Random Walk Parallel</h3>';
             html += `<p>The server's score follows a <b>biased random walk</b> of ${n} steps (weeks).</p>`;
             html += `<ul>`;
-            html += `<li>Probability of +1 (Secure): <code>P_secure = (1 - ${p})^${m} = ${p_secure.toFixed(6)}</code></li>`;
-            html += `<li>Probability of -1 (Breach): <code>P_breach = 1 - P_secure = ${p_breach.toFixed(6)}</code></li>`;
+                html += `<li><b>Probability of +1 (Secure):</b> $P_{\\text{secure}} = (1 - p)^m = (1 - ${p})^{${m}} \\approx ${p_secure.toFixed(6)}$</li>`;
+                html += `<li><b>Probability of -1 (Breach):</b> $P_{\\text{breach}} = 1 - P_{\\text{secure}} \\approx ${p_breach.toFixed(6)}$</li>`;
             html += `</ul>`;
 
             // Spiegazione Binomiale
             html += '<h3>Binomial Convergence</h3>';
             html += `<p>The number of secure weeks $k$ (out of $n$) follows a <b>Binomial Distribution</b> $B(n, p_{\text{success}})$, where $n = ${n}$ and $p_{\text{success}} = P_{\text{secure}} = ${p_secure.toFixed(4)}$.</p>`;
-            html += `<p>The chart and table below compare the simulated counts from <b>${num_sims.toLocaleString()} trajectories</b> with the theoretical counts. As $num_sims$ increases, the blue bars (Simulated) will more closely match the shape of the red line (Theoretical).</p>`;
+            html += `<p>The chart and table below compare the simulated counts from <b>${num_sims.toLocaleString()} trajectories</b> with the theoretical counts. As the <b>Number of Trajectories</b> increases, the blue bars (Simulated) will more closely match the shape of the red line (Theoretical).</p>`;
 
             // ===== NUOVA SEZIONE GRAFICO =====
             html += '<h3>Results Chart</h3>';
