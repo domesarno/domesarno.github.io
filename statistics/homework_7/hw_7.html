@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulazione Sicurezza Server</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f4f4;
+            color: #333;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        #container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        h1,
+        h2 {
+            color: #0056b3;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .input-group input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #results {
+            margin-top: 20px;
+            border-top: 2px solid #eee;
+            padding-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f9f9f9;
+        }
+
+        code {
+            background-color: #e8e8e8;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="container">
+        <h1>Simulatore di Sicurezza Server</h1>
+        <p>Questa pagina esegue una simulazione Monte Carlo per analizzare la sicurezza di un server nel tempo, come
+            richiesto dalla consegna.</p>
+
+        <h2>Parametri della Simulazione</h2>
+        <div class="input-group">
+            <label for="n_weeks">n (Settimane)</label>
+            <input type="number" id="n_weeks" value="20">
+        </div>
+        <div class="input-group">
+            <label for="m_attackers">m (Attaccanti per settimana)</label>
+            <input type="number" id="m_attackers" value="5">
+        </div>
+        <div class="input-group">
+            <label for="p_breach">p (Probabilità di violazione per attaccante)</label>
+            <input type="number" id="p_breach" value="0.1" step="0.01" min="0" max="1">
+        </div>
+        <div class="input-group">
+            <label for="num_simulations">Numero di Traiettorie (Simulazioni)</label>
+            <input type="number" id="num_simulations" value="100000">
+        </div>
+
+        <button id="runButton">Esegui Simulazione</button>
+
+        <div id="results">
+        </div>
+    </div>
+
+    <script>
+        // --- Funzioni Matematiche di Supporto ---
+
+        // Calcola il fattoriale (pericoloso per numeri grandi, usiamo un trucco)
+        // Non lo useremo direttamente, ma è utile per capire le combinazioni.
+
+        /**
+         * Calcola le combinazioni C(n, k) - "n su k"
+         * Usa un metodo stabile per evitare overflow di fattoriali.
+         */
+        function combinations(n, k) {
+            if (k < 0 || k > n) {
+                return 0;
+            }
+            if (k === 0 || k === n) {
+                return 1;
+            }
+            if (k > n / 2) {
+                k = n - k; // Ottimizzazione: C(n, k) == C(n, n-k)
+            }
+            let res = 1;
+            for (let i = 1; i <= k; ++i) {
+                res = res * (n - i + 1) / i;
+            }
+            return res;
+        }
+
+        /**
+         * Calcola la probabilità binomiale P(k)
+         * P(k) = C(n, k) * (p_success^k) * ((1-p_success)^(n-k))
+         */
+        function binomialProbability(n, k, p_success) {
+            const prob = combinations(n, k) * Math.pow(p_success, k) * Math.pow(1 - p_success, n - k);
+            return prob;
+        }
+
+        // --- Funzione Principale della Simulazione ---
+
+        function runSimulation() {
+            // 1. Leggi i valori dagli input
+            const n = parseInt(document.getElementById('n_weeks').value);
+            const m = parseInt(document.getElementById('m_attackers').value);
+            const p = parseFloat(document.getElementById('p_breach').value);
+            const num_sims = parseInt(document.getElementById('num_simulations').value);
+
+            // Validazione
+            if (isNaN(n) || isNaN(m) || isNaN(p) || isNaN(num_sims) || n <= 0 || m < 0 || p < 0 || p > 1 || num_sima <= 0) {
+                document.getElementById('results').innerHTML = `<p style="color: red;">Per favore, inserisci valori validi.</p>`;
+                return;
+            }
+
+            // 2. Calcola le probabilità della singola settimana
+            // P_sicuro = probabilità che TUTTI gli m hacker falliscano
+            const p_secure = Math.pow(1 - p, m);
+            // P_violato = probabilità che ALMENO UN hacker abbia successo
+            const p_breach = 1 - p_secure;
+
+            // 3. Esegui le N simulazioni (traiettorie)
+            const scoreCounts = {}; // Un oggetto per contare i punteggi finali (es. {-10: 120, -8: 400, ...})
+
+            for (let i = 0; i < num_sims; i++) {
+                let currentScore = 0;
+                // Simula una singola traiettoria di n settimane
+                for (let week = 0; week < n; week++) {
+                    // Genera un numero casuale tra 0 e 1
+                    const rand = Math.random();
+
+                    if (rand < p_breach) {
+                        currentScore -= 1; // Server violato
+                    } else {
+                        currentScore += 1; // Server sicuro
+                    }
+                }
+
+                // Fine della traiettoria, registra il punteggio finale
+                scoreCounts[currentScore] = (scoreCounts[currentScore] || 0) + 1;
+            }
+
+            // 4. Formatta e mostra i risultati
+            displayResults(n, p_secure, p_breach, scoreCounts, num_sims);
+        }
+
+        /**
+         * Funzione per mostrare i risultati nella pagina
+         */
+        function displayResults(n, p_secure, p_breach, scoreCounts, num_sims) {
+            const resultsDiv = document.getElementById('results');
+
+            // Inizializza l'HTML dei risultati
+            let html = '<h2>Risultati della Simulazione</h2>';
+
+            // --- Spiegazione del Random Walk ---
+            html += '<h3>1. Parallelismo con il Random Walk</h3>';
+            html += `<p>Il punteggio del server segue un <strong>Random Walk "biased"</strong> (con deviazione) di ${n} passi (settimane).</p>`;
+            html += `<p>A ogni passo (settimana), il punteggio può muoversi di +1 o -1:</p>`;
+            html += `<ul>`;
+            html += `<li>Probabilità di +1 (Sicuro): <code>P_sicuro = (1 - p)^m = (1 - ${p})^{${m}} = ${p_secure.toFixed(6)}</code></li>`;
+            html += `<li>Probabilità di -1 (Violato): <code>P_violato = 1 - P_sicuro = ${p_breach.toFixed(6)}</code></li>`;
+            html += `</ul>`;
+            html += `<p>Poiché queste probabilità non sono 0.5 (a meno che <code>m</code> e <code>p</code> non siano valori molto specifici), il "cammino" ha una tendenza a muoversi in una direzione (probabilmente verso il -1, dato che la violazione è più probabile del fallimento di tutti gli hacker).</p>`;
+
+            // --- Spiegazione della Convergenza Binomiale ---
+            html += '<h3>2. Convergenza alla Distribuzione Binomiale</h3>';
+            html += `<p>Il numero di settimane "Sicure" (chiamiamolo <code>k</code>) in ${n} settimane totali segue una <strong>Distribuzione Binomiale</strong> con <code>n = ${n}</code> e <code>p_successo = P_sicuro = ${p_secure.toFixed(4)}</code>.</p>`;
+            html += `<p>Il punteggio totale è collegato a <code>k</code> dalla formula: <strong><code>Punteggio = 2k - n</code></strong>.</p>`;
+            html += `<p>La tabella seguente confronta i conteggi della nostra simulazione (empirici) con i conteggi teorici attesi dalla formula binomiale (<code>Conteggio Teorico = P(k) * N_Simulazioni</code>). All'aumentare del numero di simulazioni, i valori nelle due colonne "Conteggio" convergeranno.</p>`;
+
+            // --- Tabella dei Risultati ---
+            html += '<h3>3. Conteggio Traiettorie per Punteggio</h3>';
+            html += '<table>';
+            html += '<tr><th>k (Settimane Sicure)</th><th>Punteggio Finale (2k - n)</th><th>Conteggio Simulata (Traiettorie)</th><th>Conteggio Teorico (Binomiale)</th></tr>';
+
+            // Ciclo su tutti i possibili valori di k (da 0 a n)
+            for (let k = 0; k <= n; k++) {
+                const score = 2 * k - n;
+
+                // Conteggio dalla nostra simulazione
+                const observedCount = scoreCounts[score] || 0;
+
+                // Conteggio dalla formula teorica binomiale
+                const theoreticalProb = binomialProbability(n, k, p_secure);
+                const theoreticalCount = theoreticalProb * num_sims;
+
+                html += '<tr>';
+                html += `<td>${k}</td>`;
+                html += `<td>${score}</td>`;
+                html += `<td>${observedCount}</td>`;
+                html += `<td>${theoreticalCount.toFixed(2)}</td>`;
+                html += '</tr>';
+            }
+
+            html += '</table>';
+
+            // Inserisci tutto l'HTML generato nella pagina
+            resultsDiv.innerHTML = html;
+        }
+
+        // Collega la funzione al bottone
+        document.getElementById('runButton').addEventListener('click', runSimulation);
+
+        // Esegui una simulazione al caricamento della pagina con i valori di default
+        runSimulation();
+
+    </script>
+</body>
+
+</html>
