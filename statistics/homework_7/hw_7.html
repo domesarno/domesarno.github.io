@@ -1,139 +1,298 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulazione Sicurezza Server</title>
+    <title>Server Security Simulation</title>
+    
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fc;
+            color: #222;
+            margin: 0;
             line-height: 1.6;
-            background-color: #f4f4f4;
-            color: #333;
+        }
+
+        /* Header section */
+        .header {
+            background-color: #2c2c2c;
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.3em;
+        }
+
+        .header h2 {
+            font-weight: 400;
+            font-size: 1.3em;
+            color: #ddd;
+        }
+
+        /* Main content */
+        .content {
             max-width: 900px;
-            margin: 20px auto;
-            padding: 20px;
+            margin: 40px auto;
+            padding: 0 25px;
         }
 
-        #container {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        h3 {
+            border-left: 5px solid #2b4d9a;
+            padding-left: 10px;
+            color: #1b3d8a;
+            margin-top: 40px;
         }
 
-        h1,
-        h2 {
-            color: #0056b3;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
+        ul {
+            list-style-type: disc;
+            margin-left: 30px;
         }
 
-        .input-group {
-            margin-bottom: 15px;
+        a {
+            color: #1b3d8a;
+            text-decoration: none;
         }
 
-        .input-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+        a:hover {
+            text-decoration: underline;
         }
 
-        .input-group input {
-            width: calc(100% - 20px);
-            padding: 10px;
-            border: 1px solid #ccc;
+        .back-home {
+            display: inline-block;
+            margin-top: 30px;
+            color: #000;
+            text-decoration: none;
+        }
+        
+        .math-block {
+            text-align: center;
+            background-color: #f6f7fc;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.9em;
+            color: #555;
+            margin-top: 50px;
+            padding: 15px 0 30px 0;
+            border-top: 1px solid #ccc;
+        }
+
+        code {
+            background-color: #eef;
+            padding: 2px 6px;
             border-radius: 4px;
         }
 
         button {
-            background-color: #007bff;
+            background-color: #2b4d9a;
             color: white;
-            padding: 12px 20px;
             border: none;
-            border-radius: 4px;
+            padding: 10px 18px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
         }
 
         button:hover {
-            background-color: #0056b3;
+            background-color: #1a336b;
+        }
+
+        /* ----- NUOVI STILI PER QUESTA SIMULAZIONE ----- */
+
+        /* Contenitore per la UI (BORDO RIMOSSO) */
+        #simulation-ui {
+            background-color: #eef2fb;
+            padding: 25px;
+            border-radius: 8px;
+            /* border-left: 5px solid #2b4d9a; <-- RIMOSSO COME RICHIESTO */
+            margin-top: 20px;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .input-group label {
+            font-weight: bold;
+            flex-basis: 280px;
+            margin-right: 10px;
+        }
+
+        .input-group input {
+            flex-grow: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-width: 100px;
+        }
+        
+        #runButton {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1em;
+            margin-top: 10px;
         }
 
         #results {
             margin-top: 20px;
-            border-top: 2px solid #eee;
-            padding-top: 20px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        /* Contenitore per il grafico */
+        #chart-container {
+            width:100%; 
+            max-width:900px; /* Adattato al max-width del .content */
+            margin: 20px auto; 
+            background-color: #ffffff; 
+            padding: 15px; 
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
-        th,
-        td {
+        th, td {
             border: 1px solid #ddd;
             padding: 10px;
             text-align: center;
         }
 
         th {
-            background-color: #f9f9f9;
+            background-color: #f6f7fc;
+            color: #1b3d8a;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        code {
-            background-color: #e8e8e8;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
     </style>
+    
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 
 <body>
-
-    <div id="container">
-        <h1>Simulatore di Sicurezza Server</h1>
-        <p>Questa pagina esegue una simulazione Monte Carlo per analizzare la sicurezza di un server nel tempo, come
-            richiesto dalla consegna.</p>
-
-        <h2>Parametri della Simulazione</h2>
-        <div class="input-group">
-            <label for="n_weeks">n (Settimane)</label>
-            <input type="number" id="n_weeks" value="20">
-        </div>
-        <div class="input-group">
-            <label for="m_attackers">m (Attaccanti per settimana)</label>
-            <input type="number" id="m_attackers" value="5">
-        </div>
-        <div class="input-group">
-            <label for="p_breach">p (Probabilità di violazione per attaccante)</label>
-            <input type="number" id="p_breach" value="0.1" step="0.01" min="0" max="1">
-        </div>
-        <div class="input-group">
-            <label for="num_simulations">Numero di Traiettorie (Simulazioni)</label>
-            <input type="number" id="num_simulations" value="100000">
-        </div>
-
-        <button id="runButton">Esegui Simulazione</button>
-
-        <div id="results">
-        </div>
+    <div class="header">
+        <h1>Server Security Simulation</h1>
+        <h2>Analysis of Random Walks and Binomial Convergence</h2>
     </div>
 
+    <div class="content">
+
+        <h3>Theoretical Background</h3>
+        <p>
+            This page simulates a server's security score over $n$ weeks. Each week, $m$ attackers attempt to breach the system, with each attacker having an individual success probability $p$. The server's score is updated weekly: +1 if it remains secure, and -1 if it is breached.
+        </p>
+        <p>
+            The core event is the probability of the server remaining secure for one week. This only happens if <b>all $m$ attackers fail</b>. The probability of a single attacker failing is $(1-p)$.
+        </p>
+        
+        <p>The probability of the server being <b>secure</b> (+1 point) is the probability of all independent attackers failing:</p>
+        <div class="math-block">
+            $$P_{\text{secure}} = (1-p) \times (1-p) \times \dots \times (1-p) = (1-p)^m$$
+        </div>
+        
+        <p>The probability of the server being <b>breached</b> (-1 point) is the complement (i.e., at least one attacker succeeds):</p>
+        <div class="math-block">
+            $$P_{\text{breach}} = 1 - P_{\text{secure}} = 1 - (1-p)^m$$
+        </div>
+
+        <p>
+            <b>Random Walk Parallel:</b> The server's cumulative score over $n$ weeks follows a <b>1D biased random walk</b>. At each step (week), the score moves +1 (with probability $P_{\text{secure}}$) or -1 (with probability $P_{\text{breach}}$).
+        </p>
+        <p>
+            <b>Binomial Convergence:</b> The total number of <i>secure</i> weeks, let's call it $k$, follows a <b>Binomial Distribution</b> $B(n, p_{\text{success}})$, where $n$ is the number of trials (weeks) and $p_{\text{success}} = P_{\text{secure}}$. The final score is directly linked to $k$:
+        </p>
+        <div class="math-block">
+            $$ \text{Score} = (k \times 1) + ((n-k) \times -1) = 2k - n $$
+        </div>
+        <p>
+            Our simulation will run many trajectories and count the final scores. As the number of simulations increases, the distribution of these final scores will converge to the theoretical Binomial distribution.
+        </p>
+
+        <h3>Interactive Simulation</h3>
+        <p>
+            Adjust the parameters below and run the Monte Carlo simulation. The results will show the analysis of the random walk and the convergence to the binomial distribution.
+        </p>
+
+        <div id="simulation-ui">
+            <div class="input-group">
+                <label for="n_weeks">n (Weeks)</label>
+                <input type="number" id="n_weeks" value="20" min="1">
+            </div>
+            <div class="input-group">
+                <label for="m_attackers">m (Attackers per week)</label>
+                <input type="number" id="m_attackers" value="5" min="0">
+            </div>
+            <div class="input-group">
+                <label for="p_breach">p (Breach probability per attacker)</label>
+                <input type="number" id="p_breach" value="0.1" step="0.01" min="0" max="1">
+            </div>
+            <div class="input-group">
+                <label for="num_simulations">Number of Trajectories (Simulations)</label>
+                <input type="number" id="num_simulations" value="100000" min="100">
+            </div>
+
+            <button id="runButton">Run Simulation</button>
+        </div>
+
+        <div id="results">
+            </div>
+
+
+        <h3>Sources</h3>
+        <ul>
+            <li><a href="https://en.wikipedia.org/wiki/Random_walk" target="_blank">Wikipedia – Random Walk</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/Binomial_distribution" target="_blank">Wikipedia – Binomial Distribution</a></li>
+        </ul>
+
+        <a href="#" class="back-home">← Back Home</a>
+    </div>
+
+    <footer>
+        © 2025 | Server Security Simulation
+    </footer>
+
     <script>
+        
+        // --- Variabile globale per il grafico ---
+        // Mi serve per distruggere il grafico precedente prima di disegnarne uno nuovo
+        let resultsChart = null;
+
         // --- Funzioni Matematiche di Supporto ---
 
-        // Calcola il fattoriale (pericoloso per numeri grandi, usiamo un trucco)
-        // Non lo useremo direttamente, ma è utile per capire le combinazioni.
-
-        /**
-         * Calcola le combinazioni C(n, k) - "n su k"
-         * Usa un metodo stabile per evitare overflow di fattoriali.
-         */
         function combinations(n, k) {
             if (k < 0 || k > n) {
                 return 0;
@@ -142,7 +301,7 @@
                 return 1;
             }
             if (k > n / 2) {
-                k = n - k; // Ottimizzazione: C(n, k) == C(n, n-k)
+                k = n - k;
             }
             let res = 1;
             for (let i = 1; i <= k; ++i) {
@@ -151,11 +310,13 @@
             return res;
         }
 
-        /**
-         * Calcola la probabilità binomiale P(k)
-         * P(k) = C(n, k) * (p_success^k) * ((1-p_success)^(n-k))
-         */
         function binomialProbability(n, k, p_success) {
+            if (p_success === 1) {
+                return k === n ? 1 : 0;
+            }
+            if (p_success === 0) {
+                return k === 0 ? 1 : 0;
+            }
             const prob = combinations(n, k) * Math.pow(p_success, k) * Math.pow(1 - p_success, n - k);
             return prob;
         }
@@ -163,111 +324,186 @@
         // --- Funzione Principale della Simulazione ---
 
         function runSimulation() {
-            // 1. Leggi i valori dagli input
+            // 1. Leggi i valori
             const n = parseInt(document.getElementById('n_weeks').value);
             const m = parseInt(document.getElementById('m_attackers').value);
             const p = parseFloat(document.getElementById('p_breach').value);
             const num_sims = parseInt(document.getElementById('num_simulations').value);
 
             // Validazione
-            if (isNaN(n) || isNaN(m) || isNaN(p) || isNaN(num_sims) || n <= 0 || m < 0 || p < 0 || p > 1 || num_sima <= 0) {
-                document.getElementById('results').innerHTML = `<p style="color: red;">Per favore, inserisci valori validi.</p>`;
+            if (isNaN(n) || isNaN(m) || isNaN(p) || isNaN(num_sims) || n <= 0 || m < 0 || p < 0 || p > 1 || num_sims <= 0) {
+                document.getElementById('results').innerHTML = `<p style="color: red; text-align:center;">Please enter valid simulation parameters.</p>`;
                 return;
             }
 
-            // 2. Calcola le probabilità della singola settimana
-            // P_sicuro = probabilità che TUTTI gli m hacker falliscano
+            // 2. Calcola le probabilità
             const p_secure = Math.pow(1 - p, m);
-            // P_violato = probabilità che ALMENO UN hacker abbia successo
             const p_breach = 1 - p_secure;
 
-            // 3. Esegui le N simulazioni (traiettorie)
-            const scoreCounts = {}; // Un oggetto per contare i punteggi finali (es. {-10: 120, -8: 400, ...})
+            // 3. Esegui le simulazioni
+            const scoreCounts = {}; 
 
             for (let i = 0; i < num_sims; i++) {
                 let currentScore = 0;
-                // Simula una singola traiettoria di n settimane
                 for (let week = 0; week < n; week++) {
-                    // Genera un numero casuale tra 0 e 1
                     const rand = Math.random();
-
                     if (rand < p_breach) {
-                        currentScore -= 1; // Server violato
+                        currentScore -= 1;
                     } else {
-                        currentScore += 1; // Server sicuro
+                        currentScore += 1;
                     }
                 }
-
-                // Fine della traiettoria, registra il punteggio finale
-                scoreCounts[currentScore] = (scoreCounts[currentScore] || 0) + 1;
+                const finalScore = Math.round(currentScore);
+                scoreCounts[finalScore] = (scoreCounts[finalScore] || 0) + 1;
             }
 
-            // 4. Formatta e mostra i risultati
-            displayResults(n, p_secure, p_breach, scoreCounts, num_sims);
+            // 4. Mostra i risultati
+            displayResults(n, m, p, p_secure, p_breach, scoreCounts, num_sims);
         }
 
         /**
-         * Funzione per mostrare i risultati nella pagina
+         * Funzione per mostrare i risultati (TESTO + TABELLA + GRAFICO)
          */
-        function displayResults(n, p_secure, p_breach, scoreCounts, num_sims) {
+        function displayResults(n, m, p, p_secure, p_breach, scoreCounts, num_sims) {
             const resultsDiv = document.getElementById('results');
+            
+            // --- Dati per il Grafico e la Tabella ---
+            // Devo prepararli prima di generare l'HTML
+            let chartLabels = [];
+            let chartSimulatedData = [];
+            let chartTheoreticalData = [];
 
-            // Inizializza l'HTML dei risultati
-            let html = '<h2>Risultati della Simulazione</h2>';
+            // Costruisco l'HTML della tabella mentre raccolgo i dati per il grafico
+            let tableHTML = '<table>';
+            tableHTML += '<tr><th>k (Secure Weeks)</th><th>Final Score (2k - n)</th><th>Simulated Count</th><th>Theoretical Count</th></tr>';
 
-            // --- Spiegazione del Random Walk ---
-            html += '<h3>1. Parallelismo con il Random Walk</h3>';
-            html += `<p>Il punteggio del server segue un <strong>Random Walk "biased"</strong> (con deviazione) di ${n} passi (settimane).</p>`;
-            html += `<p>A ogni passo (settimana), il punteggio può muoversi di +1 o -1:</p>`;
-            html += `<ul>`;
-            html += `<li>Probabilità di +1 (Sicuro): <code>P_sicuro = (1 - p)^m = (1 - ${p})^{${m}} = ${p_secure.toFixed(6)}</code></li>`;
-            html += `<li>Probabilità di -1 (Violato): <code>P_violato = 1 - P_sicuro = ${p_breach.toFixed(6)}</code></li>`;
-            html += `</ul>`;
-            html += `<p>Poiché queste probabilità non sono 0.5 (a meno che <code>m</code> e <code>p</code> non siano valori molto specifici), il "cammino" ha una tendenza a muoversi in una direzione (probabilmente verso il -1, dato che la violazione è più probabile del fallimento di tutti gli hacker).</p>`;
-
-            // --- Spiegazione della Convergenza Binomiale ---
-            html += '<h3>2. Convergenza alla Distribuzione Binomiale</h3>';
-            html += `<p>Il numero di settimane "Sicure" (chiamiamolo <code>k</code>) in ${n} settimane totali segue una <strong>Distribuzione Binomiale</strong> con <code>n = ${n}</code> e <code>p_successo = P_sicuro = ${p_secure.toFixed(4)}</code>.</p>`;
-            html += `<p>Il punteggio totale è collegato a <code>k</code> dalla formula: <strong><code>Punteggio = 2k - n</code></strong>.</p>`;
-            html += `<p>La tabella seguente confronta i conteggi della nostra simulazione (empirici) con i conteggi teorici attesi dalla formula binomiale (<code>Conteggio Teorico = P(k) * N_Simulazioni</code>). All'aumentare del numero di simulazioni, i valori nelle due colonne "Conteggio" convergeranno.</p>`;
-
-            // --- Tabella dei Risultati ---
-            html += '<h3>3. Conteggio Traiettorie per Punteggio</h3>';
-            html += '<table>';
-            html += '<tr><th>k (Settimane Sicure)</th><th>Punteggio Finale (2k - n)</th><th>Conteggio Simulata (Traiettorie)</th><th>Conteggio Teorico (Binomiale)</th></tr>';
-
-            // Ciclo su tutti i possibili valori di k (da 0 a n)
             for (let k = 0; k <= n; k++) {
                 const score = 2 * k - n;
-
-                // Conteggio dalla nostra simulazione
+                
+                // Dati Osservati
                 const observedCount = scoreCounts[score] || 0;
-
-                // Conteggio dalla formula teorica binomiale
+                
+                // Dati Teorici
                 const theoreticalProb = binomialProbability(n, k, p_secure);
                 const theoreticalCount = theoreticalProb * num_sims;
 
-                html += '<tr>';
-                html += `<td>${k}</td>`;
-                html += `<td>${score}</td>`;
-                html += `<td>${observedCount}</td>`;
-                html += `<td>${theoreticalCount.toFixed(2)}</td>`;
-                html += '</tr>';
-            }
+                // 1. Popola i dati per la tabella
+                tableHTML += '<tr>';
+                tableHTML += `<td>${k}</td>`;
+                tableHTML += `<td><b>${score}</b></td>`;
+                tableHTML += `<td>${observedCount.toLocaleString()}</td>`;
+                tableHTML += `<td>${theoreticalCount.toFixed(2)}</td>`;
+                tableHTML += '</tr>';
 
-            html += '</table>';
+                // 2. Popola i dati per il grafico
+                chartLabels.push(`Score ${score} (k=${k})`); // Etichetta per l'asse X
+                chartSimulatedData.push(observedCount);      // Valore barra simulata
+                chartTheoreticalData.push(theoreticalCount); // Valore linea teorica
+            }
+            tableHTML += '</table>';
+
+
+            // --- Costruzione dell'HTML dei Risultati ---
+            
+            let html = '<h2>Simulation Results</h2>';
+
+            // Spiegazione Random Walk
+            html += '<h3>Random Walk Parallel</h3>';
+            html += `<p>The server's score follows a <b>biased random walk</b> of ${n} steps (weeks).</p>`;
+            html += `<ul>`;
+            html += `<li>Probability of +1 (Secure): <code>P_secure = (1 - ${p})^${m} = ${p_secure.toFixed(6)}</code></li>`;
+            html += `<li>Probability of -1 (Breach): <code>P_breach = 1 - P_secure = ${p_breach.toFixed(6)}</code></li>`;
+            html += `</ul>`;
+            
+            // Spiegazione Binomiale
+            html += '<h3>Binomial Convergence</h3>';
+            html += `<p>The number of secure weeks $k$ (out of $n$) follows a <b>Binomial Distribution</b> $B(n, p_{\text{success}})$, where $n = ${n}$ and $p_{\text{success}} = P_{\text{secure}} = ${p_secure.toFixed(4)}$.</p>`;
+            html += `<p>The chart and table below compare the simulated counts from <b>${num_sims.toLocaleString()} trajectories</b> with the theoretical counts. As $num_sims$ increases, the blue bars (Simulated) will more closely match the shape of the red line (Theoretical).</p>`;
+
+            // ===== NUOVA SEZIONE GRAFICO =====
+            html += '<h3>Results Chart</h3>';
+            html += '<p>This chart visualizes the distribution of final scores. The blue bars represent the actual counts from our simulation, while the red line represents the "perfect" theoretical distribution we expect to see.</p>'
+            html += '<div id="chart-container">';
+            html += '  <canvas id="resultsChart"></canvas>'; // Il "contenitore" del grafico
+            html += '</div>';
+
+            // Sezione Tabella
+            html += '<h3>Trajectory Counts by Score</h3>';
+            html += tableHTML; // Inserisce la tabella che abbiamo costruito prima
 
             // Inserisci tutto l'HTML generato nella pagina
             resultsDiv.innerHTML = html;
+            
+            // --- Creazione del Grafico ---
+            // Ora che l'HTML (incluso il <canvas>) è nella pagina, possiamo disegnarci sopra.
+
+            // 1. Distruggi il grafico precedente, se esiste
+            if (resultsChart) {
+                resultsChart.destroy();
+            }
+
+            // 2. Prendi il "contesto" del canvas
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            
+            // 3. Crea il nuovo grafico
+            resultsChart = new Chart(ctx, {
+                type: 'bar', // Tipo di grafico base
+                data: {
+                    labels: chartLabels, // Etichette asse X (es. "Score -20 (k=0)")
+                    datasets: [
+                        {
+                            label: 'Simulated Count',
+                            data: chartSimulatedData,
+                            backgroundColor: 'rgba(43, 77, 154, 0.7)', // Colore blu del tuo tema
+                            borderColor: 'rgba(43, 77, 154, 1)',
+                            borderWidth: 1,
+                            order: 2 // Le barre stanno sotto
+                        },
+                        {
+                            label: 'Theoretical Count (Line)',
+                            data: chartTheoreticalData,
+                            type: 'line', // Sovrascriviamo: questo dataset è una linea
+                            fill: false,
+                            borderColor: 'rgba(210, 43, 43, 0.8)', // Un rosso a contrasto
+                            tension: 0.1, // Leggera curva
+                            order: 1 // La linea sta sopra
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Number of Trajectories' }
+                        },
+                        x: {
+                            title: { display: true, text: 'Final Score (and k)' }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                        }
+                    }
+                }
+            });
+
+            // Riassegna MathJax per renderizzare le formule
+            if (window.MathJax) {
+                MathJax.typesetPromise();
+            }
         }
 
         // Collega la funzione al bottone
         document.getElementById('runButton').addEventListener('click', runSimulation);
-
-        // Esegui una simulazione al caricamento della pagina con i valori di default
+        
+        // Esegui una simulazione al caricamento della pagina
         runSimulation();
 
     </script>
-</body>
 
+</body>
 </html>
