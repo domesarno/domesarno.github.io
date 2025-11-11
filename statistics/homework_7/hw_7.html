@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Server Security Simulation</title>
-    
+
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -68,7 +68,7 @@
             color: #000;
             text-decoration: none;
         }
-        
+
         .math-block {
             text-align: center;
             background-color: #f6f7fc;
@@ -118,7 +118,7 @@
             /* border-left: 5px solid #2b4d9a; <-- RIMOSSO COME RICHIESTO */
             margin-top: 20px;
         }
-        
+
         .input-group {
             margin-bottom: 15px;
             display: flex;
@@ -140,7 +140,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-width: 100px;
         }
-        
+
         #runButton {
             width: 100%;
             padding: 12px;
@@ -152,26 +152,28 @@
             margin-top: 20px;
             animation: fadeIn 0.5s ease-in-out;
         }
-        
+
         /* Contenitore per il grafico */
         #chart-container {
-            width:100%; 
-            max-width:900px; /* Adattato al max-width del .content */
-            margin: 20px auto; 
-            background-color: #ffffff; 
-            padding: 15px; 
+            width: 100%;
+            max-width: 900px;
+            /* Adattato al max-width del .content */
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 15px;
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
-        th, td {
+        th,
+        td {
             border: 1px solid #ddd;
             padding: 10px;
             text-align: center;
@@ -181,14 +183,20 @@
             background-color: #f6f7fc;
             color: #1b3d8a;
         }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
 
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
-    
+
     <script>
         MathJax = {
             tex: {
@@ -213,38 +221,49 @@
 
         <h3>Theoretical Background</h3>
         <p>
-            This page simulates a server's security score over $n$ weeks. Each week, $m$ attackers attempt to breach the system, with each attacker having an individual success probability $p$. The server's score is updated weekly: +1 if it remains secure, and -1 if it is breached.
+            This page simulates a server's security score over $n$ weeks. Each week, $m$ attackers attempt to breach the
+            system, with each attacker having an individual success probability $p$. The server's score is updated
+            weekly: +1 if it remains secure, and -1 if it is breached.
         </p>
         <p>
-            The core event is the probability of the server remaining secure for one week. This only happens if <b>all $m$ attackers fail</b>. The probability of a single attacker failing is $(1-p)$.
+            The core event is the probability of the server remaining secure for one week. This only happens if <b>all
+                $m$ attackers fail</b>. The probability of a single attacker failing is $(1-p)$.
         </p>
-        
-        <p>The probability of the server being <b>secure</b> (+1 point) is the probability of all independent attackers failing:</p>
+
+        <p>The probability of the server being <b>secure</b> (+1 point) is the probability of all independent attackers
+            failing:</p>
         <div class="math-block">
             $$P_{\text{secure}} = (1-p) \times (1-p) \times \dots \times (1-p) = (1-p)^m$$
         </div>
-        
-        <p>The probability of the server being <b>breached</b> (-1 point) is the complement (i.e., at least one attacker succeeds):</p>
+
+        <p>The probability of the server being <b>breached</b> (-1 point) is the complement (i.e., at least one attacker
+            succeeds):</p>
         <div class="math-block">
             $$P_{\text{breach}} = 1 - P_{\text{secure}} = 1 - (1-p)^m$$
         </div>
 
         <p>
-            <b>Random Walk Parallel:</b> The server's cumulative score over $n$ weeks follows a <b>1D biased random walk</b>. At each step (week), the score moves +1 (with probability $P_{\text{secure}}$) or -1 (with probability $P_{\text{breach}}$).
+            <b>Random Walk Parallel:</b> The server's cumulative score over $n$ weeks follows a <b>1D biased random
+                walk</b>. At each step (week), the score moves +1 (with probability $P_{\text{secure}}$) or -1 (with
+            probability $P_{\text{breach}}$).
         </p>
         <p>
-            <b>Binomial Convergence:</b> The total number of <i>secure</i> weeks, let's call it $k$, follows a <b>Binomial Distribution</b> $B(n, p_{\text{success}})$, where $n$ is the number of trials (weeks) and $p_{\text{success}} = P_{\text{secure}}$. The final score is directly linked to $k$:
+            <b>Binomial Convergence:</b> The total number of <i>secure</i> weeks, let's call it $k$, follows a
+            <b>Binomial Distribution</b> $B(n, p_{\text{success}})$, where $n$ is the number of trials (weeks) and
+            $p_{\text{success}} = P_{\text{secure}}$. The final score is directly linked to $k$:
         </p>
         <div class="math-block">
             $$ \text{Score} = (k \times 1) + ((n-k) \times -1) = 2k - n $$
         </div>
         <p>
-            Our simulation will run many trajectories and count the final scores. As the number of simulations increases, the distribution of these final scores will converge to the theoretical Binomial distribution.
+            Our simulation will run many trajectories and count the final scores. As the number of simulations
+            increases, the distribution of these final scores will converge to the theoretical Binomial distribution.
         </p>
 
         <h3>Interactive Simulation</h3>
         <p>
-            Adjust the parameters below and run the Monte Carlo simulation. The results will show the analysis of the random walk and the convergence to the binomial distribution.
+            Adjust the parameters below and run the Monte Carlo simulation. The results will show the analysis of the
+            random walk and the convergence to the binomial distribution.
         </p>
 
         <div id="simulation-ui">
@@ -269,24 +288,25 @@
         </div>
 
         <div id="results">
-            </div>
+        </div>
 
 
         <h3>Sources</h3>
         <ul>
             <li><a href="https://en.wikipedia.org/wiki/Random_walk" target="_blank">Wikipedia – Random Walk</a></li>
-            <li><a href="https://en.wikipedia.org/wiki/Binomial_distribution" target="_blank">Wikipedia – Binomial Distribution</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/Binomial_distribution" target="_blank">Wikipedia – Binomial
+                    Distribution</a></li>
         </ul>
 
         <a href="#" class="back-home">← Back Home</a>
     </div>
 
     <footer>
-        © 2025 | Server Security Simulation
+        © 2025 - Domenico Sarno | Homework 7 - 12th Nov
     </footer>
 
     <script>
-        
+
         // --- Variabile globale per il grafico ---
         // Mi serve per distruggere il grafico precedente prima di disegnarne uno nuovo
         let resultsChart = null;
@@ -341,7 +361,7 @@
             const p_breach = 1 - p_secure;
 
             // 3. Esegui le simulazioni
-            const scoreCounts = {}; 
+            const scoreCounts = {};
 
             for (let i = 0; i < num_sims; i++) {
                 let currentScore = 0;
@@ -366,7 +386,7 @@
          */
         function displayResults(n, m, p, p_secure, p_breach, scoreCounts, num_sims) {
             const resultsDiv = document.getElementById('results');
-            
+
             // --- Dati per il Grafico e la Tabella ---
             // Devo prepararli prima di generare l'HTML
             let chartLabels = [];
@@ -379,10 +399,10 @@
 
             for (let k = 0; k <= n; k++) {
                 const score = 2 * k - n;
-                
+
                 // Dati Osservati
                 const observedCount = scoreCounts[score] || 0;
-                
+
                 // Dati Teorici
                 const theoreticalProb = binomialProbability(n, k, p_secure);
                 const theoreticalCount = theoreticalProb * num_sims;
@@ -404,7 +424,7 @@
 
 
             // --- Costruzione dell'HTML dei Risultati ---
-            
+
             let html = '<h2>Simulation Results</h2>';
 
             // Spiegazione Random Walk
@@ -414,7 +434,7 @@
             html += `<li>Probability of +1 (Secure): <code>P_secure = (1 - ${p})^${m} = ${p_secure.toFixed(6)}</code></li>`;
             html += `<li>Probability of -1 (Breach): <code>P_breach = 1 - P_secure = ${p_breach.toFixed(6)}</code></li>`;
             html += `</ul>`;
-            
+
             // Spiegazione Binomiale
             html += '<h3>Binomial Convergence</h3>';
             html += `<p>The number of secure weeks $k$ (out of $n$) follows a <b>Binomial Distribution</b> $B(n, p_{\text{success}})$, where $n = ${n}$ and $p_{\text{success}} = P_{\text{secure}} = ${p_secure.toFixed(4)}$.</p>`;
@@ -433,7 +453,7 @@
 
             // Inserisci tutto l'HTML generato nella pagina
             resultsDiv.innerHTML = html;
-            
+
             // --- Creazione del Grafico ---
             // Ora che l'HTML (incluso il <canvas>) è nella pagina, possiamo disegnarci sopra.
 
@@ -444,7 +464,7 @@
 
             // 2. Prendi il "contesto" del canvas
             const ctx = document.getElementById('resultsChart').getContext('2d');
-            
+
             // 3. Crea il nuovo grafico
             resultsChart = new Chart(ctx, {
                 type: 'bar', // Tipo di grafico base
@@ -499,11 +519,12 @@
 
         // Collega la funzione al bottone
         document.getElementById('runButton').addEventListener('click', runSimulation);
-        
+
         // Esegui una simulazione al caricamento della pagina
         runSimulation();
 
     </script>
 
 </body>
+
 </html>

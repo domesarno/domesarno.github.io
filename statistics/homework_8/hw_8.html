@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homework 8 - Comparative Analysis</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fc;
+            color: #222;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        /* Header section */
+        .header {
+            background-color: #2c2c2c;
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.3em;
+        }
+
+        .header h2 {
+            font-weight: 400;
+            font-size: 1.3em;
+            color: #ddd;
+        }
+
+        /* Main content */
+        .content {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 25px;
+        }
+
+        /* Stile H3 senza numeri, come da template */
+        h3 {
+            border-left: 5px solid #2b4d9a;
+            padding-left: 10px;
+            color: #1b3d8a;
+            margin-top: 40px;
+        }
+
+        ul {
+            list-style-type: disc;
+            margin-left: 30px;
+        }
+
+        a {
+            color: #1b3d8a;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .back-home {
+            display: inline-block;
+            margin-top: 30px;
+            color: #000;
+            text-decoration: none;
+        }
+
+        /* Stile per i blocchi di formule */
+        .math-block {
+            text-align: center;
+            background-color: #f6f7fc;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.9em;
+            color: #555;
+            margin-top: 50px;
+            padding: 15px 0 30px 0;
+            border-top: 1px solid #ccc;
+        }
+
+        code {
+            background-color: #eef;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+    </style>
+
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+</head>
+
+<body>
+    <div class="header">
+        <h1>Homework 8</h1>
+        <h2>Comparative Analysis and Mathematical Properties</h2>
+    </div>
+
+    <div class="content">
+
+        <h3>Analogy of Two Simulations</h3>
+        <p>
+            The two homework assignments—one demonstrating the <b>Law of Large Numbers (LLN)</b> and the other
+            simulating server security to show convergence to the <b>Binomial Distribution</b>—are both powerful
+            examples of Monte Carlo simulation built upon the same foundation: the <b>Bernoulli process</b>.
+        </p>
+        <p>
+            A Bernoulli process is a sequence of independent and identically distributed (i.i.d.) random variables,
+            where each trial has exactly two possible outcomes (e.g., success/failure, heads/tails, secure/breached).
+            Both simulations explore the collective behavior of these trials as the number of trials, $n$, increases.
+        </p>
+
+        <h3>Core Similarities</h3>
+        <p>
+            Despite their different goals, the simulations share a common architecture:
+        </p>
+        <ul>
+            <li>
+                <b>Stochastic Foundation:</b> Both model phenomena as a sequence of $n$ independent random trials. The
+                outcome of one trial (or week) has no influence on the next.
+            </li>
+            <li>
+                <b>Bernoulli Trial:</b> The LLN simulation (HW4) uses a simple, *fair* Bernoulli trial (outcome 0 or 1,
+                $p=0.5$). The Server simulation (HW7) uses a *compound*, *biased* Bernoulli trial (outcome -1 or +1),
+                where the probability $P_{\text{secure}} = (1-p)^m$ is itself derived from $m$ other trials, but remains
+                a constant probability for each week.
+            </li>
+            <li>
+                <b>Monte Carlo Method:</b> Both run a large number of independent "trajectories" ($m$ or `num_sims`) to
+                show how the empirical, simulated results converge to the theoretical, mathematical truth.
+            </li>
+        </ul>
+
+        <h3>Fundamental Differences</h3>
+        <p>
+            The primary difference lies in *what* is being measured and *what principle* is being demonstrated.
+        </p>
+        <ul>
+            <li>
+                <b>What is Measured?</b>
+                <ul>
+                    <li>The <b>LLN (HW4)</b> simulation measures the <b>running average</b> of the outcomes
+                        ($\frac{1}{n}\sum X_i$) *within* each trajectory as $n$ increases.</li>
+                    <li>The <b>Server (HW7)</b> simulation measures the <b>final sum</b> (or score, $2k-n$) *across* all
+                        trajectories for a fixed $n$.</li>
+                </ul>
+            </li>
+            <li>
+                <b>What is Demonstrated?</b>
+                <ul>
+                    <li><b>LLN (HW4)</b> demonstrates that the <b>sample mean converges to the true mean</b> ($E[X]$) as
+                        $n \to \infty$. It's a statement about the convergence of a single value.</li>
+                    <li><b>Server (HW7)</b> demonstrates that the <b>distribution of the sum</b> of $n$ trials conforms
+                        to the theoretical <b>Binomial Distribution</b>. It's a statement about the *shape* of the
+                        resulting probability mass function.</li>
+                </ul>
+            </li>
+            <li>
+                <b>The Random Variable:</b>
+                <ul>
+                    <li>In <b>LLN (HW4)</b>, the variable $X_i$ is $\{0, 1\}$. We track its average.</li>
+                    <li>In <b>Server (HW7)</b>, the variable $X_i$ is $\{-1, +1\}$, which is the definition of a
+                        <b>Random Walk</b>. We track the distribution of its final position.
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+        <h3>Relationship to Binomial Coefficients</h3>
+        <p>
+            The core of the Server simulation (HW7) is built on <b>binomial coefficients</b>. A binomial coefficient,
+            written as $\binom{n}{k}$, counts the number of ways to choose $k$ items from a set of $n$ (e.g., "n choose
+            k").
+        </p>
+        <p>
+            In our Server simulation, a final score of $2k-n$ is achieved by having exactly $k$ "secure" weeks and $n-k$
+            "breach" weeks. The number of <i>different trajectories</i> (or paths) that can lead to this exact outcome
+            is precisely $\binom{n}{k}$.
+        </p>
+        <p>
+            This is why the theoretical probability is (Number of Paths) $\times$ (Probability of one specific path):
+        </p>
+        <div class="math-block">
+            $$ P(\text{Score} = 2k-n) = P(k \text{ successes}) = \binom{n}{k} (P_{\text{secure}})^k
+            (P_{\text{breach}})^{n-k} $$
+        </div>
+
+        <h3>Pascal's Triangle and Random Walks</h3>
+        <p>
+            <b>Pascal's Triangle</b> is the geometric arrangement of binomial coefficients. Each number in the triangle
+            is the sum of the two numbers directly above it.
+        </p>
+        <div class="math-block">
+            $$ \binom{n}{k} = \binom{n-1}{k-1} + \binom{n-1}{k} $$
+        </div>
+
+
+        [Image of Pascal's Triangle]
+
+        <p>
+            This is not just a mathematical curiosity; it is the <b>exact formula for a simple random walk</b> (where
+            $p=0.5$). The number of distinct paths a walker can take from the origin to a position $j$ after $n$ steps
+            is a number found in the triangle.
+        </p>
+        <p>
+            The rows of Pascal's Triangle *are* the probability distributions for a simple random walk (like flipping a
+            fair coin). Our Server simulation is a *biased* random walk, but the underlying <i>combinatorial
+                structure</i> (the counting of paths) is the same, and it's described by Pascal's Triangle.
+        </p>
+
+        <h3>The Binomial Expansion</h3>
+        <p>
+            The <b>Binomial Theorem</b> states how to expand a binomial $(x+y)$ raised to a power $n$:
+        </p>
+        <div class="math-block">
+            $$ (x+y)^n = \sum_{k=0}^{n} \binom{n}{k} x^k y^{n-k} $$
+        </div>
+        <p>
+            This is the <b>generating function</b> for the binomial distribution. If we set $x = P_{\text{secure}}$ and
+            $y = P_{\text{breach}}$, the expansion becomes:
+        </p>
+        <div class="math-block">
+            $$ (P_{\text{secure}} + P_{\text{breach}})^n = \sum_{k=0}^{n} \binom{n}{k} (P_{\text{secure}})^k
+            (P_{\text{breach}})^{n-k} $$
+        </div>
+        <p>
+            Since $P_{\text{secure}} + P_{\text{breach}} = 1$, the left side is $1^n = 1$. The right side is the <b>sum
+                of all possible outcomes</b> (from $k=0$ secure weeks to $k=n$ secure weeks). Each individual term in
+            that sum is precisely the binomial probability $P(K=k)$ that we plotted in our simulation.
+        </p>
+
+        <h3>Combinatorics and the Fibonacci Sequence</h3>
+        <p>
+            While the <b>Fibonacci sequence</b> ($1, 1, 2, 3, 5, 8, \dots$) is not directly modeled in our simulations,
+            it is deeply related to the combinatorial coefficients we've been using.
+        </p>
+        <p>
+            The $n$-th Fibonacci number, $F_n$, can be expressed as the sum of the "shallow diagonals" of Pascal's
+            Triangle.
+        </p>
+        <div class="math-block">
+            $$ F_n = \sum_{k=0}^{\lfloor (n-1)/2 \rfloor} \binom{n-1-k}{k} $$
+        </div>
+        <p>
+            This formula arises from a classic combinatorial problem: $F_n$ represents the number of ways to tile a $1
+            \times (n-1)$ board using $1 \times 1$ squares and $1 \times 2$ dominoes. This illustrates a broader
+            principle: binomial coefficients (and by extension, Pascal's Triangle) are a fundamental 'lookup table' for
+            combinatorial problems, appearing in everything from probability distributions to random walks and even
+            sequence generation.
+        </p>
+
+        <h3>Sources</h3>
+        <ul>
+            <li><a href="https://en.wikipedia.org/wiki/Law_of_large_numbers" target="_blank">Wikipedia – Law of Large Numbers</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/Binomial_distribution" target="_blank">Wikipedia – Binomial Distribution</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/Random_walk" target="_blank">Wikipedia – Random Walk</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/Pascal%27s_triangle" target="_blank">Wikipedia – Pascal's Triangle</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/Fibonacci_number" target="_blank">Wikipedia – Fibonacci Number</a></li>
+        </ul>
+        <a href="#" class="back-home">← Back Home</a>
+    </div>
+
+    <footer>
+        © 2025 - Domenico Sarno | Homework 8 - 12th Nov
+    </footer>
+
+</body>
+
+</html>
