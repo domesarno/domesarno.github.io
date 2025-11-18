@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homework 9 - Probability Theory & Measure</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fc;
+            color: #222;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        /* Header section */
+        .header {
+            background-color: #2c2c2c;
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.3em;
+        }
+
+        .header h2 {
+            font-weight: 400;
+            font-size: 1.3em;
+            color: #ddd;
+        }
+
+        /* Main content */
+        .content {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 25px;
+        }
+
+        /* Stile H3 senza numeri, come da template */
+        h3 {
+            border-left: 5px solid #2b4d9a;
+            padding-left: 10px;
+            color: #1b3d8a;
+            margin-top: 40px;
+        }
+
+        ul {
+            list-style-type: disc;
+            margin-left: 30px;
+        }
+
+        a {
+            color: #1b3d8a;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .back-home {
+            display: inline-block;
+            margin-top: 30px;
+            color: #000;
+            text-decoration: none;
+        }
+
+        /* Stile per i blocchi di formule */
+        .math-block {
+            text-align: center;
+            background-color: #f6f7fc;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.9em;
+            color: #555;
+            margin-top: 50px;
+            padding: 15px 0 30px 0;
+            border-top: 1px solid #ccc;
+        }
+
+        code {
+            background-color: #eef;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+    </style>
+
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+</head>
+
+<body>
+    <div class="header">
+        <h1>Homework 9</h1>
+        <h2>Interpretations, Measure Theory, and Axiomatic Derivations</h2>
+    </div>
+
+    <div class="content">
+
+        <h3>Interpretations of Probability and Conceptual Inconsistencies</h3>
+        <p>
+            Before the formalization of modern probability theory, several schools of thought attempted to define what
+            "probability" actually means. While intuitive, each interpretation faces conceptual inconsistencies when
+            pushed to its limits.
+        </p>
+        <ul>
+            <li>
+                <b>Classical Interpretation (Laplace):</b> Defines probability based on the principle of indifference.
+                If an experiment has $N$ mutually exclusive and <i>equally likely</i> outcomes, and an event $A$
+                consists of $N_A$ outcomes, then $P(A) = N_A / N$.
+                <br><i>Inconsistency:</i> It is circular. It defines probability using the term "equally likely," which
+                itself implies equal probability. Furthermore, it fails when handling infinite sample spaces.
+            </li>
+            <li>
+                <b>Frequentist Interpretation (Von Mises):</b> Defines probability as the limit of relative frequency
+                over an infinite sequence of trials: $P(A) = \lim_{n \to \infty} \frac{n_A}{n}$.
+                <br><i>Inconsistency:</i> It cannot assign probability to single, non-repeatable events (e.g.,
+                "probability of rain tomorrow"). Mathematically, there is no guarantee that this limit exists in the
+                real world.
+            </li>
+            <li>
+                <b>Subjective/Bayesian Interpretation (De Finetti, Ramsey):</b> Defines probability as a measure of an
+                individual's "degree of belief," typically quantified by betting odds.
+                <br><i>Inconsistency:</i> It lacks objectivity. Two rational people can assign different probabilities
+                to the same event, making scientific standardization difficult without prior consensus.
+            </li>
+        </ul>
+
+        <h3>The Axiomatic Resolution</h3>
+        <p>
+            In 1933, <b>Andrey Kolmogorov</b> resolved these inconsistencies by separating the <i>definition</i> of
+            probability from its <i>interpretation</i>. The <b>Axiomatic Approach</b> does not tell us <i>what</i>
+            probability means (frequency vs. belief) or <i>how</i> to choose the numbers (symmetry vs. data); rather, it
+            dictates the <b>rules</b> that any valid probability measure must obey.
+        </p>
+        <p>
+            By treating probability strictly as a mathematical function satisfying specific axioms, Kolmogorov provided
+            a rigorous foundation that supports Classical, Frequentist, and Bayesian applications equally, provided they
+            adhere to the mathematical rules.
+        </p>
+
+        <h3>Probability Theory and Measure Theory</h3>
+        <p>
+            Modern probability is essentially a branch of <b>Measure Theory</b>. Measure theory studies the size
+            (length, area, volume) of sets. Probability is simply measure theory applied to a total "volume" of 1.
+        </p>
+        <p>
+            We define a <b>Probability Space</b> as a triplet $(\Omega, \mathcal{F}, P)$:
+        </p>
+        <ul>
+            <li>
+                <b>Sample Space ($\Omega$):</b> The set of all possible outcomes. In measure theory, this is the "space"
+                being measured.
+            </li>
+            <li>
+                <b>Sigma-Algebra ($\mathcal{F}$):</b> A collection of subsets of $\Omega$ (events) to which we can
+                assign a probability. We cannot always assign a probability to <i>every</i> subset (due to paradoxes
+                like Banach-Tarski), so $\mathcal{F}$ represents the set of "measurable events" or "askable questions."
+                <br>$\mathcal{F}$ must be closed under complement and countable unions.
+            </li>
+            <li>
+                <b>Probability Measure ($P$):</b> A set function $P: \mathcal{F} \to [0,1]$. In measure theory, a
+                measure $\mu$ can be infinite (e.g., the length of a line), but a probability measure is normalized such
+                that $P(\Omega) = 1$.
+            </li>
+            <li>
+                <b>Random Variables ($X$):</b> In this framework, a random variable is not a variable, but a
+                <b>measurable function</b> $X: \Omega \to \mathbb{R}$. It maps abstract outcomes ($\omega$) to real
+                numbers. "Measurable" ensures that for any interval of numbers, the set of outcomes that map to that
+                interval is actually in $\mathcal{F}$ (i.e., we can calculate its probability).
+            </li>
+        </ul>
+
+        <h3>Derivations from the Axioms</h3>
+        <p>
+            Using Kolmogorov's three axioms—<b>(1) Non-negativity</b> ($P(E) \ge 0$), <b>(2) Normalization</b>
+            ($P(\Omega)=1$), and <b>(3) Countable Additivity</b> for disjoint sets—we can derive fundamental properties.
+        </p>
+
+        <h4>1. The Inclusion-Exclusion Principle (for n=2)</h4>
+        <p>
+            We want to find $P(A \cup B)$ for any sets $A, B$.
+            <br>We can decompose $A \cup B$ into three <b>disjoint</b> sets: $A \cap B^c$, $B \cap A^c$, and $A \cap B$
+        </p>
+        <div class="math-block">
+            $$ A = (A \cap B^c) \cup (A \cap B) $$
+            $$ B = (B \cap A^c) \cup (A \cap B) $$
+        </div>
+        <p>
+            By Axiom 3 (additivity for disjoint sets):
+        </p>
+        <div class="math-block">
+            $$ P(A) = P(A \cap B^c) + P(A \cap B) \implies P(A \cap B^c) = P(A) - P(A \cap B) $$
+            $$ P(B) = P(B \cap A^c) + P(A \cap B) \implies P(B \cap A^c) = P(B) - P(A \cap B) $$
+        </div>
+        <p>
+            Since $A \cup B$ is the disjoint union of $(A \cap B^c)$, $(B \cap A^c)$, and $(A \cap B)$:
+        </p>
+        <div class="math-block">
+            $$ \begin{aligned}
+            P(A \cup B) &= P(A \cap B^c) + P(B \cap A^c) + P(A \cap B) \\
+            &= [P(A) - P(A \cap B)] + [P(B) - P(A \cap B)] + P(A \cap B) \\
+            &= P(A) + P(B) - P(A \cap B)
+            \end{aligned} $$
+        </div>
+
+        <h4>2. Subadditivity (Boole's Inequality)</h4>
+        <p>
+            <b>Property:</b> For any sequence of events $A_1, A_2, \dots$ (not necessarily disjoint), the probability of their
+            union is less than or equal to the sum of their probabilities.
+        </p>
+        <div class="math-block">
+            $$ P\left( \bigcup_{i=1}^{\infty} A_i \right) \le \sum_{i=1}^{\infty} P(A_i) $$
+        </div>
+        <p>
+            <b>Derivation:</b> We construct a new sequence of <i>disjoint</i> sets $E_i$ that cover the same space as
+            $A_i$:
+            <br>Let $E_1 = A_1$
+            <br>Let $E_2 = A_2 \setminus A_1 = A_2 \cap A_1^c$
+            <br>Let $E_n = A_n \setminus (\bigcup_{k=1}^{n-1} A_k)$
+        </p>
+        <p>
+            By construction, the $E_i$ are disjoint, $E_i \subseteq A_i$, and $\bigcup E_i = \bigcup A_i$.
+            <br>Using Axiom 3 on the disjoint sets $E_i$:
+        </p>
+        <div class="math-block">
+            $$ P\left( \bigcup_{i=1}^{\infty} A_i \right) = P\left( \bigcup_{i=1}^{\infty} E_i \right) =
+            \sum_{i=1}^{\infty} P(E_i) $$
+        </div>
+        <p>
+            Since $E_i \subseteq A_i$, by the monotonicity of probability (derived from axioms), we know $P(E_i) \le
+            P(A_i)$. Therefore:
+        </p>
+        <div class="math-block">
+            $$ \sum_{i=1}^{\infty} P(E_i) \le \sum_{i=1}^{\infty} P(A_i) $$
+        </div>
+
+        <h3>Sources</h3>
+        <ul>
+            <li><a href="https://en.wikipedia.org/wiki/Probability_interpretations" target="_blank">Wikipedia –
+                    Probability Interpretations</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/Probability_axioms" target="_blank">Wikipedia – Kolmogorov
+                    Axioms</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/Measure_theory" target="_blank">Wikipedia – Measure Theory</a>
+            </li>
+            <li><a href="https://en.wikipedia.org/wiki/Boole%27s_inequality" target="_blank">Wikipedia – Boole's
+                    Inequality (Subadditivity)</a></li>
+        </ul>
+        <a href="../../index.html" class="back-home">← Back Home</a>
+    </div>
+
+    <footer>
+        © 2025 - Domenico Sarno | Homework 9 - 19th Nov
+    </footer>
+
+</body>
+
+</html>

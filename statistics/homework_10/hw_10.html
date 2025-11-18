@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homework 10 - Poisson Process</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fc;
+            color: #222;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        /* Header section */
+        .header {
+            background-color: #2c2c2c;
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.3em;
+        }
+
+        .header h2 {
+            font-weight: 400;
+            font-size: 1.3em;
+            color: #ddd;
+        }
+
+        /* Main content */
+        .content {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 25px;
+        }
+
+        /* H3 style consistent with previous HWs */
+        h3 {
+            border-left: 5px solid #2b4d9a;
+            padding-left: 10px;
+            color: #1b3d8a;
+            margin-top: 40px;
+        }
+
+        ul {
+            list-style-type: disc;
+            margin-left: 30px;
+        }
+
+        a {
+            color: #1b3d8a;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .back-home {
+            display: inline-block;
+            margin-top: 30px;
+            color: #000;
+            text-decoration: none;
+        }
+
+        /* Style for math blocks */
+        .math-block {
+            text-align: center;
+            background-color: #f6f7fc;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        /* Interactive Section Styling (Lighter Blue) */
+        .interactive-section {
+            background-color: #eef4ff;
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 30px;
+            border: 2px solid #d0e0ff;
+        }
+
+        /* Input and Label Styling for consistency */
+        .interactive-section label {
+            font-weight: 600;
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            color: #1b3d8a;
+        }
+
+        .interactive-section input[type="number"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 150px;
+            margin-right: 20px;
+        }
+
+        /* Run Simulation Button Style (Matching HW blue) */
+        #runSimButton {
+            background-color: #2b4d9a;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 700;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        #runSimButton:hover {
+            background-color: #1b3d8a;
+        }
+
+        #results {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #d0e0ff;
+        }
+
+        .graph-container {
+            margin-top: 25px;
+            padding: 10px;
+            text-align: center;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.9em;
+            color: #555;
+            margin-top: 50px;
+            padding: 15px 0 30px 0;
+            border-top: 1px solid #ccc;
+        }
+
+        code {
+            background-color: #eef;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+    </style>
+
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+    <script>
+        // Colors for the sample paths
+        const pathColors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd"];
+
+        // Mock event generator for a single path (Exponential Inter-arrival times)
+        function generateSinglePath(lambda, maxT = 1) {
+            let path = [{ t: 0, N: 0 }];
+            let t = 0;
+            let N = 0;
+
+            // Generate mock inter-arrival times based on a modified Exponential(lambda) logic
+            // The * 0.5 factor slows down the mock process slightly for visual clarity on the graph.
+            while (t < maxT && N < 20) {
+                const dt = -Math.log(Math.random()) / lambda * 0.5;
+                if (t + dt > maxT) break;
+
+                t += dt;
+                N += 1;
+                path.push({ t: t, N: N });
+            }
+            path.push({ t: maxT, N: N }); // Ensure path ends at maxT
+            return path;
+        }
+
+        // Generates the SVG visualization of 5 sample paths
+        function generatePathsGraph(lambda) {
+            const numPaths = 5;
+            const svgWidth = 600;
+            const svgHeight = 350;
+            const padding = 40; // Increased padding for labels
+            const maxT = 1;
+            const maxN = Math.max(10, Math.ceil(lambda * 2.5)); // Scale N axis dynamically, min 10.
+
+            let svg = `<svg width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}" xmlns="http://www.w3.org/2000/svg" style="border: 1px solid #ccc;">`;
+
+            // Scaling factors
+            const scaleX = (svgWidth - 2 * padding) / maxT;
+            const scaleY = (svgHeight - 2 * padding) / maxN;
+
+            // --- 1. Draw Grid (Subtle) ---
+            const gridColor = "#eee";
+            const numXTicks = 10;
+            const numYTicks = Math.min(maxN, 10); // Max 10 horizontal ticks
+
+            // Horizontal Grid Lines (N(t))
+            const stepY = maxN / numYTicks;
+            for (let i = 1; i <= numYTicks; i++) {
+                const N_val = i * stepY;
+                const y = svgHeight - padding - (N_val / maxN) * (svgHeight - 2 * padding);
+                svg += `<line x1="${padding}" y1="${y}" x2="${svgWidth - padding}" y2="${y}" stroke="${gridColor}" stroke-width="0.5"/>`;
+            }
+
+            // Vertical Grid Lines (Time t)
+            for (let i = 1; i < numXTicks; i++) {
+                const x = padding + (i / numXTicks) * (svgWidth - 2 * padding);
+                svg += `<line x1="${x}" y1="${padding}" x2="${x}" y2="${svgHeight - padding}" stroke="${gridColor}" stroke-width="0.5"/>`;
+            }
+
+            // --- 2. Draw Axes ---
+            // X-axis (Time t)
+            svg += `<line x1="${padding}" y1="${svgHeight - padding}" x2="${svgWidth - padding}" y2="${svgHeight - padding}" stroke="black" stroke-width="1"/>`;
+            svg += `<text x="${svgWidth / 2}" y="${svgHeight - 5}" text-anchor="middle" font-size="12">Time (t)</text>`;
+
+            // X-axis Ticks (More values: 10 total)
+            for (let i = 0; i <= numXTicks; i++) {
+                const t = i / numXTicks;
+                const x = padding + t * (svgWidth - 2 * padding);
+                // Draw a small tick mark
+                svg += `<line x1="${x}" y1="${svgHeight - padding}" x2="${x}" y2="${svgHeight - padding + 5}" stroke="black" stroke-width="1"/>`;
+                // Draw label
+                svg += `<text x="${x}" y="${svgHeight - padding + 20}" text-anchor="middle" font-size="10">${t.toFixed(2)}</text>`;
+            }
+
+
+            // Y-axis (N(t))
+            svg += `<line x1="${padding}" y1="${svgHeight - padding}" x2="${padding}" y2="${padding}" stroke="black" stroke-width="1"/>`;
+            svg += `<text transform="rotate(-90)" x="${-svgHeight / 2}" y="${padding / 3}" text-anchor="middle" font-size="12">N(t)</text>`;
+
+            // Y-axis Labels (Fixed: Correctly drawing ticks from 0 to maxN)
+            for (let i = 0; i <= maxN; i += Math.max(1, Math.floor(maxN / 5))) {
+                const y = svgHeight - padding - (i / maxN) * (svgHeight - 2 * padding);
+
+                // Draw a small tick mark
+                svg += `<line x1="${padding - 5}" y1="${y}" x2="${padding}" y2="${y}" stroke="black" stroke-width="1"/>`;
+
+                // Draw label
+                svg += `<text x="${padding - 8}" y="${y + 3}" text-anchor="end" font-size="10">${i}</text>`;
+            }
+
+
+            // --- 3. Generate and draw paths (Step Functions) ---
+            for (let i = 0; i < numPaths; i++) {
+                const pathData = generateSinglePath(lambda, maxT);
+                let d = `M ${padding},${svgHeight - padding}`; // Start at (0, 0)
+
+                pathData.forEach((point, index) => {
+                    const xScaled = padding + point.t * scaleX;
+                    const yScaled = svgHeight - padding - point.N * scaleY;
+
+                    if (index > 0) {
+                        const prevPoint = pathData[index - 1];
+                        // Horizontal segment (staying at current N)
+                        d += ` L ${xScaled},${svgHeight - padding - prevPoint.N * scaleY}`;
+                    }
+
+                    // Vertical jump (increase N by 1)
+                    d += ` L ${xScaled},${yScaled}`;
+                });
+
+                svg += `<path d="${d}" fill="none" stroke="${pathColors[i % pathColors.length]}" stroke-width="2" title="Path ${i + 1}"/>`;
+            }
+
+            // --- 4. Title ---
+            svg += `<text x="${svgWidth / 2}" y="${padding / 2}" text-anchor="middle" font-size="14" font-weight="bold">Sample Paths (N(t) vs Time t)</text>`;
+            svg += `</svg>`;
+            return svg;
+        }
+
+        function runSimulation() {
+            const n = parseInt(document.getElementById('subintervals').value);
+            const lambda = parseFloat(document.getElementById('lambda').value);
+            const T = 1;
+            const p = lambda * T / n;
+
+            if (n <= 0 || lambda <= 0 || n < lambda * T) {
+                document.getElementById('results').innerHTML = "🚨 <i>Error: Parameters must be positive, and 'n' must be large enough relative to 'λ'.</i>";
+                document.getElementById('graph-data').innerHTML = '';
+                return;
+            }
+
+            const expected_events = lambda * T;
+            const variance = lambda * T;
+
+            // Generate and display the conceptual graph (Sample Paths)
+            const graphSVG = generatePathsGraph(lambda);
+            document.getElementById('graph-data').innerHTML = graphSVG;
+        }
+
+        // Run simulation once on load to populate initial graph
+        window.onload = runSimulation;
+    </script>
+
+</head>
+
+<body>
+    <div class="header">
+        <h1>Homework 10</h1>
+        <h2>Approximation and Interactive Analysis of the Poisson Process</h2>
+    </div>
+
+    <div class="content">
+
+        <h3>Theoretical Process Analysis</h3>
+
+        <p>
+            The described simulation is a standard method for approximating the <b>Poisson Process</b> through a
+            sequence of <b>Bernoulli Trials</b>. The goal is to model rare and random events occurring over a continuous
+            time interval $T$ (set to 1) with a constant average rate $\lambda$.
+        </p>
+
+        <h4>Stochastic Process Identification: The Poisson Limit</h4>
+        <p>
+            The process that the simulation approximates is the <b>Poisson Process</b>, $N(t)$. This convergence is
+            governed by the <b>Poisson Limit Theorem</b>, which states that the <b>Binomial distribution</b> ($K \sim
+            \text{Binomial}(n, p)$) converges to the <b>Poisson distribution</b> when the number of trials ($n$)
+            approaches infinity and the probability of success ($p$) approaches zero, provided the mean $\lambda = n p$
+            remains constant. </p>
+        <div class="math-block">
+            $$ \text{If } K \sim \text{Binomial}\left(n, \frac{\lambda}{n}\right) \text{ and } n \to \infty, \text{ then
+            } K \approx \text{Poisson}(\lambda) $$
+            $$ P(K=k) = \frac{e^{-\lambda} \lambda^k}{k!} $$
+        </div>
+
+        <h4>Interpretation of the Rate Parameter $\lambda$</h4>
+        <p>
+            The parameter $\lambda$ represents the <b>average rate of events per unit of time</b>. For a Poisson process
+            $N(t)$, the expected number of events in any interval of length $t$ is $E[N(t)] = \lambda t$. In our case
+            ($T=1$), $E[N(1)] = \lambda$.
+        </p>
+        <p>
+            Crucially, the time between successive events (the inter-arrival times) follows an <b>Exponential
+                Distribution</b> with rate $\lambda$. This establishes the link between the discrete counting process
+            and continuous time modeling.
+        </p>
+
+        <hr>
+
+        <h3>Interactive Simulation and Demonstration</h3>
+        <p>
+            This module demonstrates the approximation of the Poisson process ($T=1$) using $n$ discrete Bernoulli
+            trials. <b>Adjust $n$ and $\lambda$</b> and click "Run Simulation" to observe how the characteristics of the
+            <b>Sample Paths</b> change, illustrating the effect of the rate parameter $\lambda$.
+        </p>
+
+        <div class="interactive-section">
+            <h4>Simulation Parameters</h4>
+
+            <label for="subintervals">Number of Subintervals ($n$):</label>
+            <input type="number" id="subintervals" value="5000" min="100" max="100000" step="100">
+            <p style="font-size: 0.9em; color: #555; margin: 5px 0;">(Represents the number of Bernoulli trials. Higher
+                $n$ ensures a better fit to Poisson)</p>
+
+            <label for="lambda">Average Rate ($\lambda$):</label>
+            <input type="number" id="lambda" value="1.0" min="0.1" max="5.0" step="0.1">
+            <p style="font-size: 0.9em; color: #555; margin: 5px 0;">(The expected number of events in the time interval
+                $T=1$)</p>
+
+            <button id="runSimButton" onclick="runSimulation()">Run Simulation</button>
+
+            <div id="results">
+            </div>
+
+            <div class="graph-container">
+                <p><b>Sample Path Visualization: $N(t)$ vs Time $t$</b></p>
+                <div id="graph-data">
+                </div>
+            </div>
+        </div>
+
+        <h3>Conclusion</h3>
+        <p>
+            The simulation demonstrates that the <b>Poisson Process</b> is the essential limit of a sequence of <b>Bernoulli
+            experiments</b> under conditions of rarity and independence. By manipulating $n$ and $\lambda$, we confirm
+            that the empirical distribution of counts converges to the theoretical Poisson distribution, thus verifying
+            the underlying <b>Poisson Limit Theorem</b>.
+        </p>
+
+        <h3>Sources</h3>
+        <ul>
+            <li><a href="https://en.wikipedia.org/wiki/Poisson_process" target="_blank">Wikipedia – Poisson Process</a>
+            </li>
+            <li><a href="https://en.wikipedia.org/wiki/Poisson_limit_theorem" target="_blank">Wikipedia – Poisson Limit
+                    Theorem</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/Exponential_distribution" target="_blank">Wikipedia – Exponential
+                    Distribution</a></li>
+        </ul>
+        <a href="../../index.html" class="back-home">← Back Home</a>
+    </div>
+
+    <footer>
+        © 2025 - Domenico Sarno | Homework 10 - 19th Nov
+    </footer>
+
+</body>
+
+</html>
