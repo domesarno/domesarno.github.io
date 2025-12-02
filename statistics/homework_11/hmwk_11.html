@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homework 11 - Brownian Motion via Box-Muller</title>
+
+    <style>
+        /* CSS Styling - Same as HW10 for consistency */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fc;
+            color: #222;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .header {
+            background-color: #2c2c2c;
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.3em;
+        }
+
+        .header h2 {
+            font-weight: 400;
+            font-size: 1.3em;
+            color: #ddd;
+        }
+
+        .content {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 25px;
+        }
+
+        h3 {
+            border-left: 5px solid #2b4d9a;
+            padding-left: 10px;
+            color: #1b3d8a;
+            margin-top: 40px;
+        }
+
+        .back-home {
+            display: inline-block;
+            margin-top: 30px;
+            color: #000;
+            text-decoration: none;
+        }
+
+        .math-block {
+            text-align: center;
+            background-color: #f6f7fc;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-size: 1.1em;
+        }
+
+        .interactive-section {
+            background-color: #eef4ff;
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 30px;
+            border: 2px solid #d0e0ff;
+        }
+
+        .interactive-section label {
+            font-weight: 600;
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            color: #1b3d8a;
+        }
+
+        .interactive-section input[type="number"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 150px;
+            margin-right: 20px;
+        }
+
+        button {
+            background-color: #2b4d9a;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 700;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #1b3d8a;
+        }
+
+        .graph-container {
+            margin-top: 25px;
+            padding: 10px;
+            text-align: center;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        canvas {
+            border: 1px solid #e0e0e0;
+            background-color: #fcfcff;
+            max-width: 100%;
+            cursor: crosshair;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.9em;
+            color: #555;
+            margin-top: 50px;
+            padding: 15px 0 30px 0;
+            border-top: 1px solid #ccc;
+        }
+
+        ul {
+            list-style-type: disc;
+            margin-left: 30px;
+        }
+
+        a {
+            color: #1b3d8a;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+
+    <script>
+        MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }, svg: { fontCache: 'global' } };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+    <script>
+        // --- Simulation Logic: Box-Muller Transform ---
+
+        // Generates a Gaussian number N(0, 1) using Box-Muller
+        // Then scales it by sigma (standard deviation)
+        function getGaussianJump(sigma) {
+            let u1 = 0, u2 = 0;
+            // Math.random() gives [0, 1), but we need (0, 1) to avoid log(0)
+            while (u1 === 0) u1 = Math.random();
+            while (u2 === 0) u2 = Math.random();
+
+            // Box-Muller Formula: Z0 = sqrt(-2ln(U1)) * cos(2pi*U2)
+            const z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+
+            // z0 is Standard Normal N(0,1). Multiply by sigma to get N(0, sigma^2)
+            return z0 * sigma;
+        }
+
+        // Helper: Draw Axes with dynamic values
+        function drawAxes(ctx, width, height, xMin, xMax, yMin, yMax, padding) {
+            ctx.strokeStyle = '#666'; ctx.fillStyle = '#444'; ctx.lineWidth = 1; ctx.font = '10px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+            const plotW = width - 2 * padding; const plotH = height - 2 * padding; const startX = padding; const startY = padding;
+
+            ctx.beginPath(); ctx.moveTo(startX, startY); ctx.lineTo(startX, startY + plotH); ctx.stroke(); // Y Axis
+            ctx.beginPath(); ctx.moveTo(startX, startY + plotH); ctx.lineTo(startX + plotW, startY + plotH); ctx.stroke(); // X Axis
+
+            const numYTicks = 6; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+            for (let i = 0; i <= numYTicks; i++) {
+                const ratio = i / numYTicks; const yVal = yMin + ratio * (yMax - yMin); const yPos = startY + plotH - (ratio * plotH);
+                ctx.beginPath(); ctx.moveTo(startX, yPos); ctx.lineTo(startX - 5, yPos); ctx.stroke();
+                ctx.fillText(yVal.toFixed(2), startX - 8, yPos);
+            }
+            const numXTicks = 5; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+            for (let i = 0; i <= numXTicks; i++) {
+                const ratio = i / numXTicks; const xVal = xMin + ratio * (xMax - xMin); const xPos = startX + ratio * plotW;
+                ctx.beginPath(); ctx.moveTo(xPos, startY + plotH); ctx.lineTo(xPos, startY + plotH + 5); ctx.stroke();
+                ctx.fillText(xVal.toFixed(1), xPos, startY + plotH + 8);
+            }
+        }
+
+        // 1. Draw Multiple Brownian Paths (Ensemble)
+        function drawBrownianEnsemble(ctx, width, height, steps, sigma, numPathsToDraw) {
+            const padding = 50;
+            ctx.clearRect(0, 0, width, height);
+
+            // Theoretical scaling: Standard Deviation grows as sqrt(n) * sigma
+            const finalStdDev = Math.sqrt(steps) * sigma;
+            // Visual Limit: approx 3.5 standard deviations
+            const yMaxAbs = Math.max(0.5, 3.5 * finalStdDev);
+
+            const yMin = -yMaxAbs; const yMax = yMaxAbs;
+            drawAxes(ctx, width, height, 0, steps, yMin, yMax, padding);
+
+            const plotW = width - 2 * padding; const plotH = height - 2 * padding;
+            const scaleX = plotW / steps; const scaleY = plotH / (yMax - yMin);
+            const originX = padding; const originY = padding + plotH - ((0 - yMin) * scaleY);
+
+            ctx.lineWidth = 1;
+            for (let p = 0; p < numPathsToDraw; p++) {
+                let currentVal = 0;
+                ctx.beginPath();
+                ctx.strokeStyle = `rgba(31, 119, 180, 0.4)`; // Semi-transparent blue
+                ctx.moveTo(originX, originY);
+                for (let i = 1; i <= steps; i++) {
+                    currentVal += getGaussianJump(sigma); // Box-Muller call
+                    const x = originX + i * scaleX;
+                    const y = originY - currentVal * scaleY;
+                    ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+        }
+
+        // 2. Draw Histogram vs Gaussian Curve
+        function drawHistogram(ctx, width, height, steps, sigma, numSims) {
+            const padding = 50;
+            ctx.clearRect(0, 0, width, height);
+
+            const finalValues = [];
+            for (let i = 0; i < numSims; i++) {
+                let val = 0;
+                for (let s = 0; s < steps; s++) val += getGaussianJump(sigma);
+                finalValues.push(val);
+            }
+
+            const finalStdDev = Math.sqrt(steps) * sigma;
+            const rangeLimit = Math.max(Math.max(...finalValues.map(Math.abs)), 3.5 * finalStdDev);
+            const numBins = 50;
+            const binWidth = (2 * rangeLimit) / numBins;
+            const bins = new Array(numBins).fill(0);
+
+            finalValues.forEach(v => {
+                let binIdx = Math.floor((v + rangeLimit) / binWidth);
+                if (binIdx >= 0 && binIdx < numBins) bins[binIdx]++;
+            });
+
+            const maxCount = Math.max(...bins);
+            drawAxes(ctx, width, height, -rangeLimit, rangeLimit, 0, maxCount * 1.1, padding);
+
+            const plotW = width - 2 * padding; const plotH = height - 2 * padding;
+            const startX = padding; const baselineY = height - padding;
+            const barPixelWidth = plotW / numBins;
+
+            ctx.fillStyle = 'rgba(111, 163, 214, 0.7)'; ctx.strokeStyle = 'white'; ctx.lineWidth = 1;
+            for (let i = 0; i < numBins; i++) {
+                const barHeight = (bins[i] / (maxCount * 1.1)) * plotH;
+                ctx.fillRect(startX + i * barPixelWidth, baselineY - barHeight, barPixelWidth, barHeight);
+                ctx.strokeRect(startX + i * barPixelWidth, baselineY - barHeight, barPixelWidth, barHeight);
+            }
+
+            // Draw Theoretical Gaussian Curve
+            ctx.beginPath(); ctx.strokeStyle = '#d62728'; ctx.lineWidth = 2.5;
+            for (let px = 0; px <= plotW; px += 2) {
+                const pct = px / plotW;
+                const value = -rangeLimit + pct * (2 * rangeLimit);
+                // PDF Formula: 1/(sigma*sqrt(2pi)) * e^(-0.5 * (x/sigma)^2)
+                const pdf = (1 / (finalStdDev * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow(value / finalStdDev, 2));
+                const countY = pdf * binWidth * numSims;
+                const plotY = baselineY - (countY / (maxCount * 1.1)) * plotH;
+                if (px === 0) ctx.moveTo(startX + px, plotY); else ctx.lineTo(startX + px, plotY);
+            }
+            ctx.stroke();
+        }
+
+        function runAnalysis() {
+            const steps = parseInt(document.getElementById('steps').value);
+            const sigma = parseFloat(document.getElementById('sigma').value);
+            const numSims = 2000;
+            const numPaths = 50;
+
+            if (steps <= 0 || sigma <= 0) return;
+
+            const pathCanvas = document.getElementById('pathCanvas');
+            const pCtx = pathCanvas.getContext('2d');
+            drawBrownianEnsemble(pCtx, pathCanvas.width, pathCanvas.height, steps, sigma, numPaths);
+
+            const histCanvas = document.getElementById('histCanvas');
+            const hCtx = histCanvas.getContext('2d');
+            drawHistogram(hCtx, histCanvas.width, histCanvas.height, steps, sigma, numSims);
+
+            const theoryVar = steps * (sigma * sigma);
+            const theoryText = document.getElementById('theoryText');
+            theoryText.innerHTML = `$$ \\text{Theoretical Variance } \\sigma^2_{total} = n \\cdot \\sigma^2 \\approx ${theoryVar.toFixed(4)} $$`;
+            if (window.MathJax) MathJax.typesetPromise([theoryText]);
+        }
+        window.onload = runAnalysis;
+    </script>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Homework 11</h1>
+        <h2>Brownian Motion: Simulation via Box-Muller Transform</h2>
+    </div>
+
+    <div class="content">
+
+        <h3>Concept: Generating Normal from Uniform</h3>
+        <p>
+            The goal of this assignment is to simulate <b>Brownian Motion</b> not by approximating it with uniform jumps
+            (Random Walk), but by directly generating normally distributed increments using the <b>Box-Muller
+                Transform</b>.
+        </p>
+
+        <h4>1. The Box-Muller Transform</h4>
+        <p>
+            Computer systems typically provide a generator for <b>Uniform(0, 1)</b> random numbers (e.g.,
+            <code>Math.random()</code>). To simulate Brownian motion, we need increments $\Delta B \sim \mathcal{N}(0,
+            \sigma^2)$.
+            The Box-Muller method takes two independent uniform samples $U_1, U_2$ and transforms them into a standard
+            normal sample $Z_0$:
+        </p>
+        <div class="math-block">
+            $$ U_1, U_2 \sim \text{Uniform}(0, 1) $$
+            $$ Z_0 = \sqrt{-2 \ln(U_1)} \cos(2\pi U_2) $$
+            $$ \text{Therefore: } Z_0 \sim \mathcal{N}(0, 1) $$
+        </div>
+
+        <h4>2. Simulation of Brownian Path</h4>
+        <p>
+            We construct the path $B(t)$ by summing these Gaussian increments, scaled by our desired standard deviation
+            $\sigma$:
+        </p>
+        <div class="math-block">
+            $$ \Delta B_i = Z_0 \cdot \sigma $$
+            $$ B_n = \sum_{i=1}^{n} \Delta B_i $$
+        </div>
+        <p>
+            Since the sum of normal variables is itself normal, the final position theoretically follows:
+            $$ B_n \sim \mathcal{N}(0, n \sigma^2) $$
+        </p>
+
+        <h4>3. Note on Efficiency & Alternatives</h4>
+        <p>
+            While we used the Box-Muller transform for its mathematical clarity and elegance, it relies on trigonometric
+            functions (cosine, sine, logarithm) which can be computationally expensive in high-performance simulations.
+            In professional libraries, alternative algorithms are often preferred, such as the <b>Marsaglia Polar
+                Method</b> (a rejection sampling variant of Box-Muller that avoids trigonometry) or the <b>Ziggurat
+                Algorithm</b> (which is extremely fast but more complex to implement).
+        </p>
+
+        <hr>
+
+        <div class="interactive-section">
+            <h4>Simulation Parameters</h4>
+
+            <label>Number of Steps ($n$): <input type="number" id="steps" value="300" step="50"></label>
+            <label>Jump Std. Deviation ($\sigma$): <input type="number" id="sigma" value="1.0" step="0.1"></label>
+
+            <button onclick="runAnalysis()">Run Simulation</button>
+
+            <div id="theoryText" style="margin-top:20px; font-weight:bold; color:#333; text-align:center;"></div>
+
+            <div class="graph-container">
+                <p><b>Gaussian Random Walk Ensemble (50 Paths)</b><br>
+                    <small>Using Box-Muller increments</small>
+                </p>
+                <canvas id="pathCanvas" width="750" height="400"></canvas>
+            </div>
+
+            <div class="graph-container">
+                <p><b>Distribution of Final Positions</b><br>
+                    <small>Histogram vs Theoretical Normal PDF</small>
+                </p>
+                <canvas id="histCanvas" width="750" height="400"></canvas>
+            </div>
+        </div>
+
+        <h3>Conclusion</h3>
+        <p>
+            By utilizing the <b>Box-Muller algorithm</b>, we successfully transformed uniform randomness into normal
+            randomness.
+            The graphs confirm that the resulting process is a true Brownian Motion: the distribution of final positions
+            matches the theoretical Gaussian curve perfectly, even for small numbers of steps, because the increments
+            themselves are already normally distributed.
+        </p>
+
+        <h3>Sources</h3>
+        <ul>
+            <li><a href="https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform" target="_blank">Wikipedia –
+                    Box-Muller Transform</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/Brownian_motion" target="_blank">Wikipedia – Brownian Motion</a>
+            </li>
+            <li><a href="https://en.wikipedia.org/wiki/Normal_distribution" target="_blank">Wikipedia – Normal
+                    Distribution</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/Marsaglia_polar_method" target="_blank">Wikipedia – Marsaglia
+                    Polar Method</a></li>
+        </ul>
+
+        <a href="../../index.html" class="back-home">← Back Home</a>
+    </div>
+
+    <footer>
+        © 2025 - Domenico Sarno | 3rd Dec - Homework 11
+    </footer>
+</body>
+
+</html>
