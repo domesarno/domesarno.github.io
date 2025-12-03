@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homework 11 - Wiener Process (Euler-Maruyama)</title>
+    <title>Homework 11 - Wiener Process Simulation</title>
 
     <style>
         /* CSS Styling - Consistent with HW10 */
@@ -132,7 +132,7 @@
             text-decoration: underline;
         }
 
-        /* FIX: Ensure 'Back Home' link is definitively black */
+        /* Ensure 'Back Home' link is definitively black */
         .back-home {
             color: #000 !important;
             text-decoration: none;
@@ -141,20 +141,21 @@
         }
     </style>
 
-
     <script>
         MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }, svg: { fontCache: 'global' } };
     </script>
     <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
     <script>
-        // --- Simulation Core: Box-Muller (Standard Normal Generator) ---
+        // --- Simulation Core: Standard Normal Generator ---
+        // Using Central Limit Theorem (Sum of 12 Uniforms) approximation
+        // This avoids complex transforms like Box-Muller if not explicitly required.
         function getStandardNormal() {
-            let u1 = 0, u2 = 0;
-            while (u1 === 0) u1 = Math.random();
-            while (u2 === 0) u2 = Math.random();
-            const z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
-            return z0; // Returns Z ~ N(0, 1)
+            let sum = 0;
+            for (let i = 0; i < 12; i++) {
+                sum += Math.random();
+            }
+            return sum - 6; // Expectation of sum is 6, Variance is 1. Result is approx N(0,1)
         }
 
         // Helper: Draw Axes with dynamic values
@@ -162,15 +163,18 @@
             ctx.strokeStyle = '#666'; ctx.fillStyle = '#444'; ctx.lineWidth = 1; ctx.font = '10px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
             const plotW = width - 2 * padding; const plotH = height - 2 * padding; const startX = padding; const startY = padding;
 
+            // Draw X and Y Axes lines
             ctx.beginPath(); ctx.moveTo(startX, startY); ctx.lineTo(startX, startY + plotH); ctx.stroke();
             ctx.beginPath(); ctx.moveTo(startX, startY + plotH); ctx.lineTo(startX + plotW, startY + plotH); ctx.stroke();
 
+            // Y Ticks
             const numYTicks = 6; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
             for (let i = 0; i <= numYTicks; i++) {
                 const ratio = i / numYTicks; const yVal = yMin + ratio * (yMax - yMin); const yPos = startY + plotH - (ratio * plotH);
                 ctx.beginPath(); ctx.moveTo(startX, yPos); ctx.lineTo(startX - 5, yPos); ctx.stroke();
                 ctx.fillText(yVal.toFixed(2), startX - 8, yPos);
             }
+            // X Ticks
             const numXTicks = 5; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
             for (let i = 0; i <= numXTicks; i++) {
                 const ratio = i / numXTicks; const xVal = xMin + ratio * (xMax - xMin); const xPos = startX + ratio * plotW;
@@ -179,14 +183,13 @@
             }
         }
 
-        // 1. Draw Multiple Brownian Paths (Ensemble)
+        // 1. Draw Multiple Wiener Paths (Euler-Maruyama Simulation)
         function drawWienerEnsemble(ctx, width, height, steps, sigma, time, numPathsToDraw) {
             const padding = 50;
             ctx.clearRect(0, 0, width, height);
 
             const finalStdDev = sigma * Math.sqrt(time);
             const yMaxAbs = Math.max(0.5, 3.5 * finalStdDev);
-
             const yMin = -yMaxAbs; const yMax = yMaxAbs;
             const xMax = time;
 
@@ -204,10 +207,13 @@
                 ctx.strokeStyle = `rgba(31, 119, 180, 0.4)`;
                 ctx.moveTo(originX, originY);
                 for (let i = 1; i <= steps; i++) {
-                    // EULER-MARUYAMA STEP: B(t+dt) = B(t) + sigma * sqrt(dt) * Z
-                    currentVal += sigma * Math.sqrt(dt) * getStandardNormal();
+                    // *** EULER-MARUYAMA STEP ***
+                    // dW = sqrt(dt) * Z
+                    // B(t+dt) = B(t) + sigma * dW
+                    const dW = Math.sqrt(dt) * getStandardNormal();
+                    currentVal += sigma * dW;
 
-                    const x = originX + (i * dt) * scaleX; // X based on TIME (not step count)
+                    const x = originX + (i * dt) * scaleX; 
                     const y = originY - currentVal * scaleY;
                     ctx.lineTo(x, y);
                 }
@@ -226,7 +232,7 @@
             for (let i = 0; i < numSims; i++) {
                 let val = 0;
                 for (let s = 0; s < steps; s++) {
-                    // EULER-MARUYAMA STEP (final position only)
+                    // Euler-Maruyama Accumulation
                     val += sigma * Math.sqrt(dt) * getStandardNormal();
                 }
                 finalValues.push(val);
@@ -289,7 +295,6 @@
             // Update Theory Text Formula
             const theoryVar = sigma * sigma * time;
             const theoryText = document.getElementById('theoryText');
-            // The formula is Var(B_T) = sigma^2 * T
             theoryText.innerHTML = `$$ \\text{Theoretical Variance } \\sigma^2_{total} = \\sigma^2 \\cdot T \\approx ${theoryVar.toFixed(4)} $$`;
             if (window.MathJax) MathJax.typesetPromise([theoryText]);
         }
@@ -305,31 +310,34 @@
 
     <div class="content">
 
-        <h3>Stochastic Differential Equation (SDE) Model</h3>
+        <h3>Simulation Objective</h3>
         <p>
-            The official requirement is to simulate the <b>Wiener Process</b> (standard Brownian Motion) using the
-            <b>Euler–Maruyama method</b>. The Wiener Process is defined by the SDE:
-        </p>
-        <div class="math-block">
-            $$ dB_t = \sigma \, dW_t $$
-        </div>
-        <p>
-            Where $dW_t$ represents the stochastic increment (noise) and $\sigma$ is the <b>volatility</b> parameter. We
-            model the process $B_t$ with initial condition $B_0=0$.
+            The goal of this assignment is to simulate a <b>Wiener Process</b> (Brownian Motion) by solving the 
+            Stochastic Differential Equation (SDE) using the <b>Euler–Maruyama method</b>. 
+            This focuses on the numerical reconstruction of the continuous path $B_t$ given its stochastic differential properties.
         </p>
 
-        <h4>Euler–Maruyama Discretization</h4>
+        <h4>1. The Stochastic Differential Equation (SDE)</h4>
         <p>
-            The <b>Euler–Maruyama scheme</b> is the simplest method for numerically solving SDEs. We discretize the time
-            interval $T$ into $N$ steps of size $\Delta t = T/N$. The resulting iterative scheme is:
+            Standard Brownian Motion, or the Wiener Process $W_t$, is characterized by independent, normally distributed increments. 
+            The generalized process $B_t$ with volatility $\sigma$ is defined by the SDE:
         </p>
         <div class="math-block">
+            $$ dB_t = \sigma \, dW_t, \quad B_0 = 0 $$
+        </div>
+
+        <h4>2. The Euler–Maruyama Discretization</h4>
+        <p>
+            To simulate this on a computer, we discretize the continuous time interval $[0, T]$ into $N$ small steps of size $\Delta t = T/N$.
+            The <b>Euler–Maruyama approximation</b> updates the position iteratively:
+        </p>
+        <div class="math-block">
+            $$ B_{t + \Delta t} = B_t + \sigma \cdot \Delta W_t $$
             $$ B_{t + \Delta t} = B_t + \sigma \sqrt{\Delta t} \, Z $$
         </div>
         <p>
-            Where $Z$ is a standard normal random variable ($Z \sim \mathcal{N}(0, 1)$), generated here using the
-            <b>Box-Muller</b> transformation. This correctly accounts for the fact that the variance of the increment
-            $\Delta W_t$ is proportional to $\Delta t$.
+            Here, $Z$ is a standard normal random variable ($Z \sim \mathcal{N}(0, 1)$). 
+            Crucially, the scaling term $\sqrt{\Delta t}$ reflects the fractal nature of Brownian motion: variance scales linearly with time, so standard deviation scales with the square root of time.
         </p>
 
         <hr>
@@ -346,15 +354,23 @@
             <div id="theoryText" style="margin-top:20px; font-weight:bold; color:#333; text-align:center;"></div>
 
             <div class="graph-container">
-                <p><b>Gaussian Random Walk Ensemble (50 Paths)</b><br>
-                    <small>X-Axis: Time $t$ | Y-Axis: Position $B(t)$</small>
+                <p><b>Ensemble of Wiener Paths (50 Realizations)</b><br>
+                    <small>Visualizing the stochastic spread over time</small>
+                    
+
+[Image of Normal Distribution]
+
                 </p>
                 <canvas id="pathCanvas" width="750" height="400"></canvas>
             </div>
 
             <div class="graph-container">
                 <p><b>Distribution of Final Positions $B(T)$</b><br>
-                    <small>Histogram vs Theoretical Normal PDF</small>
+                    <small>Empirical Histogram vs Theoretical Normal PDF</small>
+                    
+
+[Image of Normal Distribution]
+
                 </p>
                 <canvas id="histCanvas" width="750" height="400"></canvas>
             </div>
@@ -362,19 +378,10 @@
 
         <h3>Conclusion</h3>
         <p>
-            By applying the <b>Euler–Maruyama method</b>, we correctly simulate the Wiener Process in continuous time.
-            The resulting diffusion process confirms two key theoretical results:
+            This exercise demonstrates the effectiveness of the <b>Euler–Maruyama method</b> for SDE simulation.
+            By correctly scaling the stochastic noise by $\sqrt{\Delta t}$, the discrete steps accumulate to form a continuous Wiener process. 
+            The histogram confirms that the final positions are normally distributed with variance $\sigma^2 T$, matching the theoretical definition of Brownian motion.
         </p>
-        <ol>
-            <li>
-                <b>SDE Discretization:</b> The simulation successfully implements the fundamental SDE numerical scheme,
-                $B_{t+\Delta t} = B_t + \sigma \sqrt{\Delta t} Z$.
-            </li>
-            <li>
-                <b>Distribution:</b> The final position $B(T)$ follows $B(T) \sim \mathcal{N}(0, \sigma^2 T)$, visually
-                confirmed by the perfect fit of the empirical histogram to the theoretical Gaussian curve.
-            </li>
-        </ol>
 
         <h3>Sources</h3>
         <ul>
@@ -382,8 +389,8 @@
                     Euler–Maruyama Method</a></li>
             <li><a href="https://en.wikipedia.org/wiki/Wiener_process" target="_blank">Wikipedia – Wiener Process
                     (Brownian Motion)</a></li>
-            <li><a href="https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform" target="_blank">Wikipedia –
-                    Box-Muller Transform</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/Central_limit_theorem" target="_blank">Wikipedia – 
+                    Central Limit Theorem (Normal approximation)</a></li>
         </ul>
 
         <a href="../../index.html" class="back-home">← Back Home</a>
