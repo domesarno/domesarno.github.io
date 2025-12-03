@@ -1,15 +1,13 @@
-HW 11
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homework 11 - Wiener Process (Euler-Maruyama)</title>
+    <title>Homework 11 - Brownian Motion via Box-Muller</title>
 
     <style>
-        /* CSS Styling - Consistent with HW10 */
+        /* CSS Styling - Same as HW10 for consistency */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8f9fc;
@@ -47,6 +45,13 @@ HW 11
             padding-left: 10px;
             color: #1b3d8a;
             margin-top: 40px;
+        }
+
+        .back-home {
+            display: inline-block;
+            margin-top: 30px;
+            color: #000;
+            text-decoration: none;
         }
 
         .math-block {
@@ -124,7 +129,11 @@ HW 11
             border-top: 1px solid #ccc;
         }
 
-        /* General Link Style (Blue) */
+        ul {
+            list-style-type: disc;
+            margin-left: 30px;
+        }
+
         a {
             color: #1b3d8a;
             text-decoration: none;
@@ -132,14 +141,6 @@ HW 11
 
         a:hover {
             text-decoration: underline;
-        }
-
-        /* FIX: Ensure 'Back Home' link is definitively black */
-        .back-home {
-            color: #000 !important;
-            text-decoration: none;
-            display: inline-block;
-            margin-top: 30px;
         }
     </style>
 
@@ -149,13 +150,21 @@ HW 11
     <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
     <script>
-        // --- Simulation Core: Box-Muller (Standard Normal Generator) ---
-        function getStandardNormal() {
+        // --- Simulation Logic: Box-Muller Transform ---
+
+        // Generates a Gaussian number N(0, 1) using Box-Muller
+        // Then scales it by sigma (standard deviation)
+        function getGaussianJump(sigma) {
             let u1 = 0, u2 = 0;
+            // Math.random() gives [0, 1), but we need (0, 1) to avoid log(0)
             while (u1 === 0) u1 = Math.random();
             while (u2 === 0) u2 = Math.random();
+
+            // Box-Muller Formula: Z0 = sqrt(-2ln(U1)) * cos(2pi*U2)
             const z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
-            return z0; // Returns Z ~ N(0, 1)
+
+            // z0 is Standard Normal N(0,1). Multiply by sigma to get N(0, sigma^2)
+            return z0 * sigma;
         }
 
         // Helper: Draw Axes with dynamic values
@@ -163,8 +172,8 @@ HW 11
             ctx.strokeStyle = '#666'; ctx.fillStyle = '#444'; ctx.lineWidth = 1; ctx.font = '10px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
             const plotW = width - 2 * padding; const plotH = height - 2 * padding; const startX = padding; const startY = padding;
 
-            ctx.beginPath(); ctx.moveTo(startX, startY); ctx.lineTo(startX, startY + plotH); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(startX, startY + plotH); ctx.lineTo(startX + plotW, startY + plotH); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(startX, startY); ctx.lineTo(startX, startY + plotH); ctx.stroke(); // Y Axis
+            ctx.beginPath(); ctx.moveTo(startX, startY + plotH); ctx.lineTo(startX + plotW, startY + plotH); ctx.stroke(); // X Axis
 
             const numYTicks = 6; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
             for (let i = 0; i <= numYTicks; i++) {
@@ -181,34 +190,31 @@ HW 11
         }
 
         // 1. Draw Multiple Brownian Paths (Ensemble)
-        function drawWienerEnsemble(ctx, width, height, steps, sigma, time, numPathsToDraw) {
+        function drawBrownianEnsemble(ctx, width, height, steps, sigma, numPathsToDraw) {
             const padding = 50;
             ctx.clearRect(0, 0, width, height);
 
-            const finalStdDev = sigma * Math.sqrt(time);
+            // Theoretical scaling: Standard Deviation grows as sqrt(n) * sigma
+            const finalStdDev = Math.sqrt(steps) * sigma;
+            // Visual Limit: approx 3.5 standard deviations
             const yMaxAbs = Math.max(0.5, 3.5 * finalStdDev);
 
             const yMin = -yMaxAbs; const yMax = yMaxAbs;
-            const xMax = time;
+            drawAxes(ctx, width, height, 0, steps, yMin, yMax, padding);
 
-            drawAxes(ctx, width, height, 0, xMax, yMin, yMax, padding);
-
-            const dt = time / steps;
             const plotW = width - 2 * padding; const plotH = height - 2 * padding;
-            const scaleX = plotW / xMax; const scaleY = plotH / (yMax - yMin);
+            const scaleX = plotW / steps; const scaleY = plotH / (yMax - yMin);
             const originX = padding; const originY = padding + plotH - ((0 - yMin) * scaleY);
 
             ctx.lineWidth = 1;
             for (let p = 0; p < numPathsToDraw; p++) {
                 let currentVal = 0;
                 ctx.beginPath();
-                ctx.strokeStyle = `rgba(31, 119, 180, 0.4)`;
+                ctx.strokeStyle = `rgba(31, 119, 180, 0.4)`; // Semi-transparent blue
                 ctx.moveTo(originX, originY);
                 for (let i = 1; i <= steps; i++) {
-                    // EULER-MARUYAMA STEP: B(t+dt) = B(t) + sigma * sqrt(dt) * Z
-                    currentVal += sigma * Math.sqrt(dt) * getStandardNormal();
-
-                    const x = originX + (i * dt) * scaleX; // X based on TIME (not step count)
+                    currentVal += getGaussianJump(sigma); // Box-Muller call
+                    const x = originX + i * scaleX;
                     const y = originY - currentVal * scaleY;
                     ctx.lineTo(x, y);
                 }
@@ -217,23 +223,18 @@ HW 11
         }
 
         // 2. Draw Histogram vs Gaussian Curve
-        function drawHistogram(ctx, width, height, steps, sigma, time, numSims) {
+        function drawHistogram(ctx, width, height, steps, sigma, numSims) {
             const padding = 50;
             ctx.clearRect(0, 0, width, height);
 
             const finalValues = [];
-            const dt = time / steps;
-
             for (let i = 0; i < numSims; i++) {
                 let val = 0;
-                for (let s = 0; s < steps; s++) {
-                    // EULER-MARUYAMA STEP (final position only)
-                    val += sigma * Math.sqrt(dt) * getStandardNormal();
-                }
+                for (let s = 0; s < steps; s++) val += getGaussianJump(sigma);
                 finalValues.push(val);
             }
 
-            const finalStdDev = sigma * Math.sqrt(time);
+            const finalStdDev = Math.sqrt(steps) * sigma;
             const rangeLimit = Math.max(Math.max(...finalValues.map(Math.abs)), 3.5 * finalStdDev);
             const numBins = 50;
             const binWidth = (2 * rangeLimit) / numBins;
@@ -263,10 +264,10 @@ HW 11
             for (let px = 0; px <= plotW; px += 2) {
                 const pct = px / plotW;
                 const value = -rangeLimit + pct * (2 * rangeLimit);
+                // PDF Formula: 1/(sigma*sqrt(2pi)) * e^(-0.5 * (x/sigma)^2)
                 const pdf = (1 / (finalStdDev * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow(value / finalStdDev, 2));
                 const countY = pdf * binWidth * numSims;
                 const plotY = baselineY - (countY / (maxCount * 1.1)) * plotH;
-
                 if (px === 0) ctx.moveTo(startX + px, plotY); else ctx.lineTo(startX + px, plotY);
             }
             ctx.stroke();
@@ -275,23 +276,22 @@ HW 11
         function runAnalysis() {
             const steps = parseInt(document.getElementById('steps').value);
             const sigma = parseFloat(document.getElementById('sigma').value);
-            const time = parseFloat(document.getElementById('time').value);
             const numSims = 2000;
             const numPaths = 50;
 
-            if (steps <= 0 || sigma <= 0 || time <= 0) return;
+            if (steps <= 0 || sigma <= 0) return;
 
             const pathCanvas = document.getElementById('pathCanvas');
-            drawWienerEnsemble(pathCanvas.getContext('2d'), pathCanvas.width, pathCanvas.height, steps, sigma, time, numPaths);
+            const pCtx = pathCanvas.getContext('2d');
+            drawBrownianEnsemble(pCtx, pathCanvas.width, pathCanvas.height, steps, sigma, numPaths);
 
             const histCanvas = document.getElementById('histCanvas');
-            drawHistogram(histCanvas.getContext('2d'), histCanvas.width, histCanvas.height, steps, sigma, time, numSims);
+            const hCtx = histCanvas.getContext('2d');
+            drawHistogram(hCtx, histCanvas.width, histCanvas.height, steps, sigma, numSims);
 
-            // Update Theory Text Formula
-            const theoryVar = sigma * sigma * time;
+            const theoryVar = steps * (sigma * sigma);
             const theoryText = document.getElementById('theoryText');
-            // The formula is Var(B_T) = sigma^2 * T
-            theoryText.innerHTML = `$$ \\text{Theoretical Variance } \\sigma^2_{total} = \\sigma^2 \\cdot T \\approx ${theoryVar.toFixed(4)} $$`;
+            theoryText.innerHTML = `$$ \\text{Theoretical Variance } \\sigma^2_{total} = n \\cdot \\sigma^2 \\approx ${theoryVar.toFixed(4)} $$`;
             if (window.MathJax) MathJax.typesetPromise([theoryText]);
         }
         window.onload = runAnalysis;
@@ -301,36 +301,53 @@ HW 11
 <body>
     <div class="header">
         <h1>Homework 11</h1>
-        <h2>Wiener Process Simulation (Euler–Maruyama Method)</h2>
+        <h2>Brownian Motion: Simulation via Box-Muller Transform</h2>
     </div>
 
     <div class="content">
 
-        <h3>Stochastic Differential Equation (SDE) Model</h3>
+        <h3>Concept: Generating Normal from Uniform</h3>
         <p>
-            The official requirement is to simulate the <b>Wiener Process</b> (standard Brownian Motion) using the
-            <b>Euler–Maruyama method</b>. The Wiener Process is defined by the SDE:
-        </p>
-        <div class="math-block">
-            $$ dB_t = \sigma \, dW_t $$
-        </div>
-        <p>
-            Where $dW_t$ represents the stochastic increment (noise) and $\sigma$ is the <b>volatility</b> parameter. We
-            model the process $B_t$ with initial condition $B_0=0$.
+            The goal of this assignment is to simulate <b>Brownian Motion</b> not by approximating it with uniform jumps
+            (Random Walk), but by directly generating normally distributed increments using the <b>Box-Muller
+                Transform</b>.
         </p>
 
-        <h4>Euler–Maruyama Discretization</h4>
+        <h4>1. The Box-Muller Transform</h4>
         <p>
-            The <b>Euler–Maruyama scheme</b> is the simplest method for numerically solving SDEs. We discretize the time
-            interval $T$ into $N$ steps of size $\Delta t = T/N$. The resulting iterative scheme is:
+            Computer systems typically provide a generator for <b>Uniform(0, 1)</b> random numbers (e.g.,
+            <code>Math.random()</code>). To simulate Brownian motion, we need increments $\Delta B \sim \mathcal{N}(0,
+            \sigma^2)$.
+            The Box-Muller method takes two independent uniform samples $U_1, U_2$ and transforms them into a standard
+            normal sample $Z_0$:
         </p>
         <div class="math-block">
-            $$ B_{t + \Delta t} = B_t + \sigma \sqrt{\Delta t} \, Z $$
+            $$ U_1, U_2 \sim \text{Uniform}(0, 1) $$
+            $$ Z_0 = \sqrt{-2 \ln(U_1)} \cos(2\pi U_2) $$
+            $$ \text{Therefore: } Z_0 \sim \mathcal{N}(0, 1) $$
+        </div>
+
+        <h4>2. Simulation of Brownian Path</h4>
+        <p>
+            We construct the path $B(t)$ by summing these Gaussian increments, scaled by our desired standard deviation
+            $\sigma$:
+        </p>
+        <div class="math-block">
+            $$ \Delta B_i = Z_0 \cdot \sigma $$
+            $$ B_n = \sum_{i=1}^{n} \Delta B_i $$
         </div>
         <p>
-            Where $Z$ is a standard normal random variable ($Z \sim \mathcal{N}(0, 1)$), generated here using the
-            <b>Box-Muller</b> transformation. This correctly accounts for the fact that the variance of the increment
-            $\Delta W_t$ is proportional to $\Delta t$.
+            Since the sum of normal variables is itself normal, the final position theoretically follows:
+            $$ B_n \sim \mathcal{N}(0, n \sigma^2) $$
+        </p>
+
+        <h4>3. Note on Efficiency & Alternatives</h4>
+        <p>
+            While we used the Box-Muller transform for its mathematical clarity and elegance, it relies on trigonometric
+            functions (cosine, sine, logarithm) which can be computationally expensive in high-performance simulations.
+            In professional libraries, alternative algorithms are often preferred, such as the <b>Marsaglia Polar
+                Method</b> (a rejection sampling variant of Box-Muller that avoids trigonometry) or the <b>Ziggurat
+                Algorithm</b> (which is extremely fast but more complex to implement).
         </p>
 
         <hr>
@@ -338,9 +355,8 @@ HW 11
         <div class="interactive-section">
             <h4>Simulation Parameters</h4>
 
-            <label>Total Time ($T$): <input type="number" id="time" value="1.0" step="0.1"></label>
-            <label>Number of Steps ($N$): <input type="number" id="steps" value="300" step="50"></label>
-            <label>Volatility ($\sigma$): <input type="number" id="sigma" value="1.0" step="0.1"></label>
+            <label>Number of Steps ($n$): <input type="number" id="steps" value="300" step="50"></label>
+            <label>Jump Std. Deviation ($\sigma$): <input type="number" id="sigma" value="1.0" step="0.1"></label>
 
             <button onclick="runAnalysis()">Run Simulation</button>
 
@@ -348,13 +364,13 @@ HW 11
 
             <div class="graph-container">
                 <p><b>Gaussian Random Walk Ensemble (50 Paths)</b><br>
-                    <small>X-Axis: Time $t$ | Y-Axis: Position $B(t)$</small>
+                    <small>Using Box-Muller increments</small>
                 </p>
                 <canvas id="pathCanvas" width="750" height="400"></canvas>
             </div>
 
             <div class="graph-container">
-                <p><b>Distribution of Final Positions $B(T)$</b><br>
+                <p><b>Distribution of Final Positions</b><br>
                     <small>Histogram vs Theoretical Normal PDF</small>
                 </p>
                 <canvas id="histCanvas" width="750" height="400"></canvas>
@@ -363,28 +379,23 @@ HW 11
 
         <h3>Conclusion</h3>
         <p>
-            By applying the <b>Euler–Maruyama method</b>, we correctly simulate the Wiener Process in continuous time.
-            The resulting diffusion process confirms two key theoretical results:
+            By utilizing the <b>Box-Muller algorithm</b>, we successfully transformed uniform randomness into normal
+            randomness.
+            The graphs confirm that the resulting process is a true Brownian Motion: the distribution of final positions
+            matches the theoretical Gaussian curve perfectly, even for small numbers of steps, because the increments
+            themselves are already normally distributed.
         </p>
-        <ol>
-            <li>
-                <b>SDE Discretization:</b> The simulation successfully implements the fundamental SDE numerical scheme,
-                $B_{t+\Delta t} = B_t + \sigma \sqrt{\Delta t} Z$.
-            </li>
-            <li>
-                <b>Distribution:</b> The final position $B(T)$ follows $B(T) \sim \mathcal{N}(0, \sigma^2 T)$, visually
-                confirmed by the perfect fit of the empirical histogram to the theoretical Gaussian curve.
-            </li>
-        </ol>
 
         <h3>Sources</h3>
         <ul>
-            <li><a href="https://en.wikipedia.org/wiki/Euler%E2%80%93Maruyama_method" target="_blank">Wikipedia –
-                    Euler–Maruyama Method</a></li>
-            <li><a href="https://en.wikipedia.org/wiki/Wiener_process" target="_blank">Wikipedia – Wiener Process
-                    (Brownian Motion)</a></li>
             <li><a href="https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform" target="_blank">Wikipedia –
                     Box-Muller Transform</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/Brownian_motion" target="_blank">Wikipedia – Brownian Motion</a>
+            </li>
+            <li><a href="https://en.wikipedia.org/wiki/Normal_distribution" target="_blank">Wikipedia – Normal
+                    Distribution</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/Marsaglia_polar_method" target="_blank">Wikipedia – Marsaglia
+                    Polar Method</a></li>
         </ul>
 
         <a href="../../index.html" class="back-home">← Back Home</a>
