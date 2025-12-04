@@ -213,7 +213,7 @@
                     const dW = Math.sqrt(dt) * getStandardNormal();
                     currentVal += sigma * dW;
 
-                    const x = originX + (i * dt) * scaleX; 
+                    const x = originX + (i * dt) * scaleX;
                     const y = originY - currentVal * scaleY;
                     ctx.lineTo(x, y);
                 }
@@ -312,14 +312,16 @@
 
         <h3>Simulation Objective</h3>
         <p>
-            The goal of this assignment is to simulate a <b>Wiener Process</b> (Brownian Motion) by solving the 
-            Stochastic Differential Equation (SDE) using the <b>Euler–Maruyama method</b>. 
-            This focuses on the numerical reconstruction of the continuous path $B_t$ given its stochastic differential properties.
+            The goal of this assignment is to simulate a <b>Wiener Process</b> (Brownian Motion) by solving the
+            Stochastic Differential Equation (SDE) using the <b>Euler–Maruyama method</b>.
+            This focuses on the numerical reconstruction of the continuous path $B_t$ given its stochastic differential
+            properties.
         </p>
 
         <h4>1. The Stochastic Differential Equation (SDE)</h4>
         <p>
-            Standard Brownian Motion, or the Wiener Process $W_t$, is characterized by independent, normally distributed increments. 
+            Standard Brownian Motion, or the Wiener Process $W_t$, is characterized by independent, normally distributed
+            increments.
             The generalized process $B_t$ with volatility $\sigma$ is defined by the SDE:
         </p>
         <div class="math-block">
@@ -328,7 +330,8 @@
 
         <h4>2. The Euler–Maruyama Discretization</h4>
         <p>
-            To simulate this on a computer, we discretize the continuous time interval $[0, T]$ into $N$ small steps of size $\Delta t = T/N$.
+            To simulate this on a computer, we discretize the continuous time interval $[0, T]$ into $N$ small steps of
+            size $\Delta t = T/N$.
             The <b>Euler–Maruyama approximation</b> updates the position iteratively:
         </p>
         <div class="math-block">
@@ -336,8 +339,9 @@
             $$ B_{t + \Delta t} = B_t + \sigma \sqrt{\Delta t} \, Z $$
         </div>
         <p>
-            Here, $Z$ is a standard normal random variable ($Z \sim \mathcal{N}(0, 1)$). 
-            Crucially, the scaling term $\sqrt{\Delta t}$ reflects the fractal nature of Brownian motion: variance scales linearly with time, so standard deviation scales with the square root of time.
+            Here, $Z$ is a standard normal random variable ($Z \sim \mathcal{N}(0, 1)$).
+            Crucially, the scaling term $\sqrt{\Delta t}$ reflects the fractal nature of Brownian motion: variance
+            scales linearly with time, so standard deviation scales with the square root of time.
         </p>
 
         <hr>
@@ -356,9 +360,9 @@
             <div class="graph-container">
                 <p><b>Ensemble of Wiener Paths (50 Realizations)</b><br>
                     <small>Visualizing the stochastic spread over time</small>
-                    
 
-[Image of Normal Distribution]
+
+                    [Image of Normal Distribution]
 
                 </p>
                 <canvas id="pathCanvas" width="750" height="400"></canvas>
@@ -367,9 +371,9 @@
             <div class="graph-container">
                 <p><b>Distribution of Final Positions $B(T)$</b><br>
                     <small>Empirical Histogram vs Theoretical Normal PDF</small>
-                    
 
-[Image of Normal Distribution]
+
+                    [Image of Normal Distribution]
 
                 </p>
                 <canvas id="histCanvas" width="750" height="400"></canvas>
@@ -379,8 +383,10 @@
         <h3>Conclusion</h3>
         <p>
             This exercise demonstrates the effectiveness of the <b>Euler–Maruyama method</b> for SDE simulation.
-            By correctly scaling the stochastic noise by $\sqrt{\Delta t}$, the discrete steps accumulate to form a continuous Wiener process. 
-            The histogram confirms that the final positions are normally distributed with variance $\sigma^2 T$, matching the theoretical definition of Brownian motion.
+            By correctly scaling the stochastic noise by $\sqrt{\Delta t}$, the discrete steps accumulate to form a
+            continuous Wiener process.
+            The histogram confirms that the final positions are normally distributed with variance $\sigma^2 T$,
+            matching the theoretical definition of Brownian motion.
         </p>
 
         <h3>Sources</h3>
@@ -389,7 +395,7 @@
                     Euler–Maruyama Method</a></li>
             <li><a href="https://en.wikipedia.org/wiki/Wiener_process" target="_blank">Wikipedia – Wiener Process
                     (Brownian Motion)</a></li>
-            <li><a href="https://en.wikipedia.org/wiki/Central_limit_theorem" target="_blank">Wikipedia – 
+            <li><a href="https://en.wikipedia.org/wiki/Central_limit_theorem" target="_blank">Wikipedia –
                     Central Limit Theorem (Normal approximation)</a></li>
         </ul>
 
